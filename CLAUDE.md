@@ -3,7 +3,7 @@
 Dois repositórios irmãos em `~/Repositorios/`: **`marketing-sell-backend`** (este, API) e **`marketing-sell-frontend`** (sistema web). As conversas abrem aqui com o frontend como pasta adicional.
 
 - Multi-tenant, bilíngue (português e inglês). Sem pagamento por enquanto.
-- Ainda não publicado (sem servidor nem domínio). Banco: cluster `saas` do Atlas (o mesmo do Manage System), banco `marketingsell` (ver `src/db/db.js`). **O `.env` local aponta para esse banco real.**
+- **Backend no VPS da OVH** (desde 2026-11-09): container `marketingsell` (384 MB), API em `https://api-marketingsell.sonelia.com.br` (DNS no Registro.br), saúde em `/api/saude`. Atualizar: `~/atualizar.sh marketingsell` (ver skill `deploy-servidor`). Cadastrado no ServerFall como "Marketing Sell". As filas de envio e de busca de e-mail rodam lá: não deixe o backend local ligado ao mesmo tempo. Banco: cluster `saas` do Atlas (o mesmo do Manage System), banco `marketingsell` (ver `src/db/db.js`). **O `.env` local aponta para esse banco real.**
 
 ## Multi-tenant e papéis
 - O dono da conta é um `users` com `role: 'admin'` e `tenantId` = o próprio `_id`. Todo documento tem `tenantId`; o token traz `tenantId`.
