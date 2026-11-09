@@ -12,7 +12,7 @@ const envioSchema = new mongoose.Schema({
     // Gmail que manda.
     email: { type: String, required: true },
     para: { type: String, required: true },
-    // Já com {nome}, {contato} e {cidade} trocados e o rodapé no final: sai exatamente o que foi pedido.
+    // Já com {nome}, {contato}, {cidade} e {estado} trocados e o rodapé no final: sai exatamente o que foi pedido.
     assunto: { type: String, default: '' },
     corpoHtml: { type: String, default: '' },
     status: { type: String, enum: ENVIO_STATUS, default: 'enviado' },
