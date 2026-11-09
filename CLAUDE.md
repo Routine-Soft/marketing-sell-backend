@@ -17,6 +17,7 @@ Dois repositórios irmãos em `~/Repositorios/`: **`marketing-sell-backend`** (e
     - `google`: Google Places API (New), Text Search. Única fonte paga (chave do sistema em `GOOGLE_API_KEY`).
     - `empresas_novas`: Secretaria de Estado via dados abertos Socrata (CO, CT, NY, OR). Estado novo = item em `ESTADOS`.
     - `licencas`: TDLR do Texas (data.texas.gov), prestadores com telefone. Só licenças de estabelecimento/empresa trazem telefone.
+- **Só e-mails do Gmail ou do Yahoo** (`shared/utils/provedor-email.js`): lead da fonte com outro e-mail é descartado na busca, e a busca no site só aceita Gmail/Yahoo. Na lista, `comEmail=gmail_yahoo` filtra.
 - `lead`: lista, filtros, edição, exclusão, exportação CSV. Sem repetição: índice único `tenantId + fonte + idExterno`; lead que já existe não é sobrescrito.
 - `email-site`: procura e-mail no site do lead. Fila no próprio banco (`emailStatus: na_fila → buscando → encontrado/nao_encontrado`), processada por `email-site.fila.js` (sobe com o servidor). O extrator bloqueia IPs internos.
 - `remetente`: um por negócio da conta (ex.: Sonélia, Stanley Andrade), com Gmail + **senha de app** (criptografada com `EMAIL_CRYPTO_KEY`, nunca volta na API), `assuntoPadrao`, `corpoPadrao`, `rodape` (CAN-SPAM: endereço físico + como sair da lista) e `ativo`. Só `admin`/`super_admin`. "Enviar teste" sai na hora com um lead de exemplo.

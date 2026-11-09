@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import { LEAD_STATUS } from './lead.model.js'
 import { FONTES } from '../captacao/fontes/index.js'
 import AppError from '../../errors/AppError.js'
+import { GMAIL_YAHOO_RE } from '../shared/utils/provedor-email.js'
 
 function escaparRegex(texto) {
     return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -20,6 +21,7 @@ export function filtroLeadsDTO(tenantId, query = {}) {
     if (/^[A-Za-z]{2}$/.test(query.estado ?? '')) filtro.estado = query.estado.toUpperCase()
     if (query.comEmail === 'sim') filtro.email = { $ne: '' }
     if (query.comEmail === 'nao') filtro.email = ''
+    if (query.comEmail === 'gmail_yahoo') filtro.email = GMAIL_YAHOO_RE
     if (query.comTelefone === 'sim') filtro.telefone = { $ne: '' }
     if (mongoose.isValidObjectId(query.buscaId)) filtro.buscaId = query.buscaId
     return filtro

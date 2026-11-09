@@ -1,9 +1,10 @@
 import dns from 'node:dns/promises'
 import net from 'node:net'
+import { ehGmailOuYahoo } from '../shared/utils/provedor-email.js'
 
 // Procura um e-mail de contato no site de um lead: página inicial e as páginas de contato/sobre mais comuns.
 // Baseado no script de leads com Google Places, com proteções: só endereços públicos (nada de rede interna),
-// tempo e tamanho limitados por página, e preferência pelo e-mail do próprio domínio do site.
+// tempo e tamanho limitados por página, e só e-mails do Gmail ou do Yahoo.
 const PAGINAS = ['', '/contact', '/contact-us', '/about', '/about-us']
 const TEMPO_POR_PAGINA_MS = 10000
 const TAMANHO_MAXIMO = 1_500_000
@@ -99,10 +100,6 @@ function emailsDaPagina(html) {
         .filter((e) => /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(e) && !FINAIS_RUINS.test(e) && !PALAVRAS_RUINS.test(e))
 }
 
-function dominioBase(host) {
-    return host.replace(/^www\./, '').split('.').slice(-2).join('.')
-}
-
 // Devolve o melhor e-mail encontrado, ou '' se não achar.
 export async function encontrarEmailNoSite(site) {
     let base
@@ -111,8 +108,6 @@ export async function encontrarEmailNoSite(site) {
     } catch {
         return ''
     }
-    const dominio = dominioBase(base.hostname)
-
     const achados = []
     for (const caminho of PAGINAS) {
         let html = await baixarPagina(caminho ? new URL(caminho, base) : base)
@@ -121,10 +116,9 @@ export async function encontrarEmailNoSite(site) {
             base = new URL(base.href.replace(/^https:/, 'http:'))
             html = await baixarPagina(base)
         }
-        achados.push(...emailsDaPagina(html))
-        // E-mail do próprio domínio é o melhor sinal: pode parar.
-        if (achados.some((e) => e.endsWith(`@${dominio}`) || e.endsWith(`.${dominio}`))) break
+        // Só vale e-mail do Gmail ou do Yahoo; o primeiro que aparecer já serve.
+        achados.push(...emailsDaPagina(html).filter(ehGmailOuYahoo))
+        if (achados.length) break
     }
-    const unicos = [...new Set(achados)]
-    return unicos.find((e) => e.endsWith(`@${dominio}`)) ?? unicos[0] ?? ''
+    return achados[0] ?? ''
 }

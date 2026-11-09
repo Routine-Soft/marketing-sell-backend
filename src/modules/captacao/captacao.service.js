@@ -4,6 +4,7 @@ import { EmailSiteService } from '../email-site/email-site.service.js'
 import { FONTES, OPCOES_DAS_FONTES } from './fontes/index.js'
 import { cotaGoogle } from './captacao.cota.js'
 import { buscaDTO } from './captacao.dto.js'
+import { ehGmailOuYahoo } from '../shared/utils/provedor-email.js'
 import AppError from '../../errors/AppError.js'
 
 // Grava os leads da busca sem repetir o que a conta já tem (mesma fonte + mesmo idExterno).
@@ -52,16 +53,19 @@ export const CaptacaoService = {
         }
 
         const resultado = await fonte.buscar(filtros, { paginasDisponiveis })
+        // Só interessam e-mails do Gmail ou do Yahoo: lead que já vem com outro e-mail fica de fora.
+        // Lead sem e-mail entra, e a busca no site só aceita Gmail ou Yahoo.
+        const leads = resultado.leads.filter((lead) => !lead.email || ehGmailOuYahoo(lead.email))
 
         const busca = await BuscaModel.create({
             tenantId,
             usuarioId,
             fonte: fonte.id,
             filtros: resultado.filtros,
-            encontrados: resultado.leads.length,
+            encontrados: leads.length,
             requisicoesGoogle: resultado.requisicoesGoogle,
         })
-        busca.novos = await salvarLeads(tenantId, fonte.id, busca._id, resultado.leads)
+        busca.novos = await salvarLeads(tenantId, fonte.id, busca._id, leads)
         await busca.save()
 
         const emailsNaFila = buscarEmails ? await EmailSiteService.enfileirar(tenantId, { buscaId: busca._id }) : 0
