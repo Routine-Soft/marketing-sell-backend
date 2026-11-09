@@ -48,6 +48,9 @@ fastify.setErrorHandler((error, request, reply) => {
   })
 })
 
+// Pública: o servidor e o monitor (ServerFall) checam por aqui se a API está no ar.
+fastify.get('/api/saude', async () => ({ success: true, data: { ok: true } }))
+
 await fastify.register(userRoutes, { prefix: '/api' })
 await fastify.register(captacaoRoutes, { prefix: '/api' })
 await fastify.register(leadRoutes, { prefix: '/api' })
