@@ -67,8 +67,4 @@ export const CaptacaoService = {
         const emailsNaFila = buscarEmails ? await EmailSiteService.enfileirar(tenantId, { buscaId: busca._id }) : 0
         return { busca, emailsNaFila }
     },
-
-    async historico(tenantId) {
-        return await BuscaModel.find({ tenantId }).sort({ createdAt: -1 }).limit(30)
-    },
 }

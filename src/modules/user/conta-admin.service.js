@@ -39,7 +39,7 @@ export const ContaAdminService = {
         return dono
     },
 
-    // Apaga a conta inteira: usuários, leads, histórico de buscas, remetentes e e-mails enviados.
+    // Apaga a conta inteira: usuários, leads, buscas, remetentes e e-mails enviados.
     async apagar(id) {
         const dono = await UserModel.findOne({ _id: id, role: 'admin' })
         if (!dono) throw new AppError('Conta não encontrada', 404)

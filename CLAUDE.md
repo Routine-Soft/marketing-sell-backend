@@ -11,7 +11,7 @@ Dois repositórios irmãos em `~/Repositorios/`: **`marketing-sell-backend`** (e
 
 ## Backend (`src/modules/`)
 - `user`: cadastro, login, refresh, minha conta; `conta-admin.service.js` = painel do super admin (contas, cota do Google, excluir conta).
-- `captacao`: busca nas fontes e histórico (`busca.model.js`). `captacao.cota.js` = cota mensal de páginas do Google por conta (`cotaGoogleMensal` no dono ou `GOOGLE_COTA_MENSAL`).
+- `captacao`: busca nas fontes (`busca.model.js` guarda cada busca; é a base da cota do Google, sem tela de histórico). `captacao.cota.js` = cota mensal de páginas do Google por conta (`cotaGoogleMensal` no dono ou `GOOGLE_COTA_MENSAL`).
   - `fontes/`: cada fonte é uma subfeature com `{ id, nome, buscar(filtros, contexto) }`, registrada em `fontes/index.js`. Todas devolvem leads no mesmo formato.
     - `npi`: NPI Registry (CMS), profissionais de saúde. Cobre APTA/AMTA/ACA (essas associações não têm API).
     - `google`: Google Places API (New), Text Search. Única fonte paga (chave do sistema em `GOOGLE_API_KEY`).

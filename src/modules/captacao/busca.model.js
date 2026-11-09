@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-// Cada busca feita numa fonte: histórico da tela de captação e base da cota mensal do Google.
+// Cada busca feita numa fonte: base da cota mensal do Google.
 const buscaSchema = new mongoose.Schema({
     tenantId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
     usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },

@@ -12,9 +12,4 @@ export const CaptacaoController = {
         const { encontrados, novos } = resultado.busca
         return reply.code(201).send({ success: true, data: resultado, message: `Busca concluída: ${encontrados} encontrados, ${novos} novos` })
     },
-
-    async historico(req, reply) {
-        const buscas = await CaptacaoService.historico(req.user.tenantId)
-        return reply.send({ success: true, data: buscas })
-    },
 }

@@ -6,6 +6,5 @@ export async function captacaoRoutes(fastify) {
     const daConta = { preHandler: authorize(['admin', 'membro', 'super_admin']) }
 
     fastify.get('/captacao/opcoes', daConta, CaptacaoController.opcoes)
-    fastify.get('/captacao/buscas', daConta, CaptacaoController.historico)
     fastify.post('/captacao/buscas', daConta, CaptacaoController.buscar)
 }
