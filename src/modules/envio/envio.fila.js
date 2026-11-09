@@ -1,7 +1,7 @@
 import EnvioModel from './envio.model.js'
 import RemetenteModel from '../remetente/remetente.model.js'
 import LeadModel from '../lead/lead.model.js'
-import { cotaDoEmail, inicioDoProximoDia } from './envio.cota.js'
+import { cotaDoEmail, inicioDoProximoDia, pausaDoGmail, pausarGmail } from './envio.cota.js'
 import { enviarPeloGmail, limiteDoGmail, senhaRecusada } from './envio.gmail.js'
 
 // Fila de e-mails para leads: cada Gmail manda um por vez, com 30 a 60 segundos entre um e outro (rajada de
@@ -30,7 +30,9 @@ async function falhar(envios, erro) {
     await terminar(envios, { status: 'erro', erro }, { envioErro: erro })
 }
 
-async function processarProximo(email) {
+async function processarProximo(email, log) {
+    const pausa = await pausaDoGmail(email)
+    if (pausa) return esperar(email, pausa.ate.getTime())
     const cota = await cotaDoEmail(email)
     if (cota.restante <= 0) return esperar(email, inicioDoProximoDia().getTime())
 
@@ -49,7 +51,9 @@ async function processarProximo(email) {
     } catch (erro) {
         if (limiteDoGmail(erro)) {
             await EnvioModel.updateOne({ _id: envio._id }, { $set: { status: 'na_fila' } })
-            return esperar(email, inicioDoProximoDia().getTime())
+            const resposta = erro?.response ?? erro?.message ?? erro
+            log.warn(`Gmail ${email} recusou por limite de envio: ${resposta}`)
+            return esperar(email, (await pausarGmail(email, resposta)).getTime())
         }
         if (senhaRecusada(erro)) {
             // Com a senha recusada, todos os outros deste remetente também falhariam.
@@ -81,7 +85,7 @@ export function iniciarFilaDeEnvios(log) {
         for (const email of emails) {
             if (ocupados.has(email) || (liberadoEm.get(email) ?? 0) > Date.now()) continue
             ocupados.add(email)
-            processarProximo(email)
+            processarProximo(email, log)
                 .catch((erro) => log.error(erro, `Falha na fila de envio do Gmail ${email}`))
                 .finally(() => ocupados.delete(email))
         }

@@ -24,7 +24,7 @@ Dois repositórios irmãos em `~/Repositorios/`: **`marketing-sell-backend`** (e
 - `envio`: e-mail para leads via **SMTP do Gmail** (nodemailer; sem serviço pago, uso pessoal).
   - `envio.model.js` = cada e-mail (teste ou lead), `status: na_fila → enviando → enviado/erro`; é também a base da cota.
   - `envio.cota.js`: limite **por Gmail, não por remetente** (dois negócios no mesmo Gmail somam), `GMAIL_LIMITE_DIARIO` (padrão 500), dia em UTC.
-  - `envio.fila.js` (sobe com o servidor): um e-mail por Gmail a cada 30–60 s; passou do limite, espera o dia seguinte; senha recusada (`EAUTH`) marca erro em toda a fila do remetente.
+  - `envio.fila.js` (sobe com o servidor): um e-mail por Gmail a cada 30–60 s; passou do limite, espera o dia seguinte; se o próprio Gmail recusar por limite, grava a pausa em `pausa-gmail.model.js` (vale após reinício e aparece no cartão "Envios de hoje" com a resposta do Gmail); senha recusada (`EAUTH`) marca erro em toda a fila do remetente.
   - `envio.template.js`: `{nome}`, `{contato}`, `{cidade}` (escapados) e rodapé no fim. Texto com HTML de bloco (`<p>`, `<br>`, `<div>`...) é usado como está; só texto simples tem as quebras de linha viradas em `<br>`.
   - Rotas: `POST /envios/previa`, `POST /envios` (não reenvia ao mesmo lead pelo mesmo negócio sem `reenviar: true`), `POST /envios/cancelar`.
   - No lead: `envioPendente`, `ultimoEnvioEm`, `ultimoEnvioNegocio`, `envioErro`; lead "novo" vira "contatado" ao receber.
