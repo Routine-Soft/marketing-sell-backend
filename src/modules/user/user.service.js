@@ -4,20 +4,25 @@ import mongoose from 'mongoose'
 import UserModel from './user.model.js'
 import { createUserDTO, updateMeDTO, loginUserDTO } from './user.dto.js'
 import AppError from '../../errors/AppError.js'
+import { negocioDaSessao } from '../negocio/negocio.contas.js'
 
-function assinarToken(user) {
-    return jwt.sign({ id: user._id, tenantId: user.tenantId, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' })
+// O token leva a conta (contaId) e o negócio aberto (tenantId): todos os dados são filtrados pelo negócio.
+async function assinarToken(user) {
+    const negocio = await negocioDaSessao(user)
+    return jwt.sign({ id: user._id, tenantId: negocio._id, contaId: user.tenantId, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' })
 }
 
 async function emitirSessao(user) {
-    const accessToken = assinarToken(user)
-    const refreshToken = assinarToken(user)
+    const accessToken = await assinarToken(user)
+    const refreshToken = await assinarToken(user)
     user.tokenRefresh = refreshToken
     await user.save()
     return { accessToken, refreshToken, user: user.toJSON() }
 }
 
 export const UserService = {
+    emitirSessao,
+
     // Cadastro de uma conta nova: a pessoa vira a dona (admin) e o próprio _id é o tenantId.
     async createUser(body) {
         const userDTO = createUserDTO(body)
@@ -57,7 +62,7 @@ export const UserService = {
         if (!user || user.tokenRefresh !== refreshToken) {
             throw new AppError('Refresh token inválido', 401)
         }
-        return { accessToken: assinarToken(user) }
+        return { accessToken: await assinarToken(user) }
     },
 
     async logoutUser(id) {

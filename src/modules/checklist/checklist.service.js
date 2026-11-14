@@ -1,22 +1,11 @@
 import ChecklistModel from './checklist.model.js'
-import UserModel from '../user/user.model.js'
-import { ITENS_PADRAO } from './checklist.padrao.js'
 import { listaDTO, itemDTO } from './checklist.dto.js'
 import AppError from '../../errors/AppError.js'
 
 export const ChecklistService = {
-    // Na primeira vez que a conta abre a lista, ela nasce com os itens da planilha. O que já nasceu fica anotado
-    // no dono da conta: apagar todos os itens não traz os itens padrão de volta.
-    async listar(tenantId, nomeDaLista) {
-        const lista = listaDTO(nomeDaLista)
-        const dono = await UserModel.findOneAndUpdate(
-            { _id: tenantId, checklistsCriadas: { $ne: lista } },
-            { $addToSet: { checklistsCriadas: lista } },
-        )
-        if (dono) {
-            await ChecklistModel.insertMany(ITENS_PADRAO[lista].map(([grupo, tarefa, detalhe], ordem) => ({ tenantId, lista, grupo, tarefa, detalhe, ordem })))
-        }
-        return ChecklistModel.find({ tenantId, lista }).sort({ ordem: 1, _id: 1 })
+    // A lista nasce com os itens do modelo do negócio (ver negocio.contas.js, semearListas).
+    listar(tenantId, nomeDaLista) {
+        return ChecklistModel.find({ tenantId, lista: listaDTO(nomeDaLista) }).sort({ ordem: 1, _id: 1 })
     },
 
     async criar(tenantId, nomeDaLista, body) {

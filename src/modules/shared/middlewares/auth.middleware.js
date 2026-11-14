@@ -14,6 +14,8 @@ export async function authenticate(req, reply) {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         req.user = decoded
+        // Sessão de antes dos negócios: a conta e o negócio eram o mesmo id.
+        req.user.contaId ??= decoded.tenantId
     } catch (error) {
         throw new AppError('Token inválido', 401)
     }

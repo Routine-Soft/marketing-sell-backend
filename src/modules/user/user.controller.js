@@ -28,8 +28,8 @@ export const UserController = {
     },
 
     async updateMe(req, reply) {
-        const { id, tenantId, role } = req.user
-        const user = await UserService.updateMe(id, tenantId, role, req.body)
+        const { id, contaId, role } = req.user
+        const user = await UserService.updateMe(id, contaId, role, req.body)
         return reply.send({ success: true, data: user, message: 'Dados atualizados com sucesso' })
     },
 

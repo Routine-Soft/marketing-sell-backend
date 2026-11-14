@@ -3,6 +3,7 @@ import LeadModel from '../lead/lead.model.js'
 import AvisoModel from './aviso.model.js'
 import { filtroFollowUp, leadsComFollowUpVencido } from '../lead/lead.contato.js'
 import { RotinaService } from '../rotina/rotina.service.js'
+import { garantirNegocios } from '../negocio/negocio.contas.js'
 import { avisarNoTelegram, chatDoTelegram } from '../shared/utils/telegram.js'
 import { diaDe, diaUtil, fimDoDia, horaAgora } from '../shared/utils/dia.js'
 
@@ -15,8 +16,8 @@ function linhaDoLead(lead) {
     return `${lead.numeroContatos + 1}º contato • ${lead.nome}${onde ? ` (${onde})` : ''} • ${contato}`
 }
 
-function textoDoLembrete(vencidos, paraEncerrar) {
-    const linhas = ['☀️ Bom dia! Rotina de hoje no Marketing Sell.', '']
+function textoDoLembrete(nomeDoNegocio, vencidos, paraEncerrar) {
+    const linhas = [`☀️ Bom dia! Rotina de hoje de ${nomeDoNegocio}.`, '']
     if (vencidos.length) {
         linhas.push(`📞 ${vencidos.length} follow-up(s) para hoje:`)
         vencidos.slice(0, MAXIMO_NA_MENSAGEM).forEach((lead) => linhas.push(`• ${linhaDoLead(lead)}`))
@@ -38,17 +39,20 @@ export async function mandarLembretes() {
     for (const dono of donos) {
         const chat = chatDoTelegram(dono)
         if (!chat) continue
-        try {
-            await AvisoModel.create({ tenantId: dono._id, tipo: 'lembrete_follow_up', dia })
-        } catch (erro) {
-            if (erro.code === 11000) continue
-            throw erro
+        // Um lembrete por negócio da conta, todos no Telegram do dono.
+        for (const negocio of await garantirNegocios(dono._id)) {
+            try {
+                await AvisoModel.create({ tenantId: negocio._id, tipo: 'lembrete_follow_up', dia })
+            } catch (erro) {
+                if (erro.code === 11000) continue
+                throw erro
+            }
+            const [vencidos, paraEncerrar] = await Promise.all([
+                leadsComFollowUpVencido(negocio._id, fimDoDia(dia)),
+                LeadModel.countDocuments({ tenantId: negocio._id, ...filtroFollowUp('encerrar') }),
+            ])
+            await RotinaService.sincronizarHoje(negocio._id)
+            avisarNoTelegram(chat, textoDoLembrete(negocio.nome, vencidos, paraEncerrar))
         }
-        const [vencidos, paraEncerrar] = await Promise.all([
-            leadsComFollowUpVencido(dono._id, fimDoDia(dia)),
-            LeadModel.countDocuments({ tenantId: dono._id, ...filtroFollowUp('encerrar') }),
-        ])
-        await RotinaService.sincronizarHoje(dono._id)
-        avisarNoTelegram(chat, textoDoLembrete(vencidos, paraEncerrar))
     }
 }

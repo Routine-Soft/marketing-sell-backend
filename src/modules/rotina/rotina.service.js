@@ -4,7 +4,7 @@ import LeadModel from '../lead/lead.model.js'
 import ContatoModel from '../lead/contato.model.js'
 import { filtroFollowUp } from '../lead/lead.contato.js'
 import ParceiroModel from '../parceiro/parceiro.model.js'
-import { LINHAS, META_LEADS, META_CONTATOS } from './rotina.tarefas.js'
+import { rotinaDoNegocio } from '../negocio/negocio.contas.js'
 import { diaDe, diaDaSemana, diaUtil, diaValido, fimDoDia, inicioDoDia, somarDias } from '../shared/utils/dia.js'
 import AppError from '../../errors/AppError.js'
 
@@ -22,7 +22,20 @@ function idDaConta(tenantId) {
 }
 
 function valeNoDia(linha, dia) {
-    return diaUtil(dia) && (!linha.dias || linha.dias.includes(diaDaSemana(dia)))
+    return diaUtil(dia) && (!linha.dias?.length || linha.dias.includes(diaDaSemana(dia)))
+}
+
+// Meta da contagem na rotina do negócio (a tarefa que se marca sozinha por ela, ou a linha automática).
+function metaDe(linhas, contagem) {
+    return linhas.find((linha) => linha.auto === contagem && linha.meta)?.meta
+        ?? linhas.find((linha) => linha.contagem === contagem && linha.meta)?.meta
+        ?? null
+}
+
+// Tarefas numeradas na ordem (1, 2, 3...), como na planilha.
+function numerar(linhas) {
+    let numero = 0
+    return linhas.map((linha) => (linha.tipo === 'tarefa' ? { ...linha, numero: ++numero } : linha))
 }
 
 // Contagens de cada dia do período: leads cadastrados, primeiros contatos, follow-ups feitos e parceiros cadastrados.
@@ -55,13 +68,13 @@ function followUpsVencidos(tenantId) {
 
 // Um dia da grade: o que está feito (marcado pela pessoa ou pelo sistema), as contagens e o % das tarefas.
 // followUpsPendentes só existe para hoje: nos outros dias, o follow-up vale o que ficou gravado.
-function montarDia(dia, contagens = SEM_CONTAGEM, marcadas = [], followUpsPendentes = null) {
+function montarDia(linhas, dia, contagens = SEM_CONTAGEM, marcadas = [], followUpsPendentes = null) {
     const feita = (linha) => {
         if (linha.auto === 'followUp') return followUpsPendentes === null ? marcadas.includes(linha.id) : followUpsPendentes === 0
         if (linha.auto) return contagens[linha.auto] >= linha.meta
         return marcadas.includes(linha.id)
     }
-    const doDia = LINHAS.filter((linha) => linha.tipo !== 'automatico' && valeNoDia(linha, dia))
+    const doDia = linhas.filter((linha) => linha.tipo !== 'automatico' && valeNoDia(linha, dia))
     const feitas = doDia.filter(feita).map((linha) => linha.id)
     const tarefas = doDia.filter((linha) => linha.tipo === 'tarefa')
     const concluidas = tarefas.filter((linha) => feitas.includes(linha.id)).length
@@ -75,7 +88,7 @@ function montarDia(dia, contagens = SEM_CONTAGEM, marcadas = [], followUpsPenden
     }
 }
 
-async function diasMontados(tenantId, primeiroDia, ultimoDia) {
+async function diasMontados(tenantId, linhas, primeiroDia, ultimoDia) {
     const hoje = diaDe()
     const [contagens, registros, pendentes] = await Promise.all([
         contagensPorDia(tenantId, primeiroDia, ultimoDia),
@@ -85,7 +98,7 @@ async function diasMontados(tenantId, primeiroDia, ultimoDia) {
     const feitasPorDia = Object.fromEntries(registros.map((registro) => [registro.dia, registro.feitas]))
     const dias = []
     for (let dia = primeiroDia; dia <= ultimoDia; dia = somarDias(dia, 1)) {
-        dias.push(montarDia(dia, contagens[dia], feitasPorDia[dia], dia === hoje ? pendentes : null))
+        dias.push(montarDia(linhas, dia, contagens[dia], feitasPorDia[dia], dia === hoje ? pendentes : null))
     }
     return dias
 }
@@ -104,17 +117,19 @@ export const RotinaService = {
         const ate = query.ate ? diaDTO(query.ate) : somarDias(de, 11)
         if (ate < de || somarDias(de, MAXIMO_DE_DIAS) < ate) throw new AppError('Período inválido', 400)
         if (hoje >= de && hoje <= ate) await this.sincronizarHoje(tenantId)
+        const { blocos, linhas } = await rotinaDoNegocio(tenantId)
         const [dias, primeiroRegistro] = await Promise.all([
-            diasMontados(tenantId, de, ate),
+            diasMontados(tenantId, linhas, de, ate),
             RotinaDiaModel.findOne({ tenantId }).sort({ dia: 1 }).lean(),
         ])
         // inicio = primeiro dia em que a conta usou a rotina: antes dele a tela não pinta o dia como "não feito".
-        return { hoje, de, ate, inicio: primeiroRegistro?.dia ?? hoje, linhas: LINHAS, dias: dias.filter((dia) => dia.util) }
+        return { hoje, de, ate, inicio: primeiroRegistro?.dia ?? hoje, blocos, linhas: numerar(linhas), dias: dias.filter((dia) => dia.util) }
     },
 
     async marcar(tenantId, texto, body) {
         const dia = diaDTO(texto)
-        const linha = LINHAS.find((item) => item.id === body?.linhaId && valeNoDia(item, dia))
+        const { linhas } = await rotinaDoNegocio(tenantId)
+        const linha = linhas.find((item) => item.id === body?.linhaId && valeNoDia(item, dia))
         if (!linha) throw new AppError('Tarefa não encontrada neste dia', 404)
         if (linha.auto || linha.tipo === 'automatico') throw new AppError('Esta tarefa é marcada sozinha pelo sistema', 400)
         await RotinaDiaModel.updateOne(
@@ -122,7 +137,7 @@ export const RotinaService = {
             body.feita ? { $addToSet: { feitas: linha.id } } : { $pull: { feitas: linha.id } },
             { upsert: true },
         )
-        const [montado] = await diasMontados(tenantId, dia, dia)
+        const [montado] = await diasMontados(tenantId, linhas, dia, dia)
         return montado
     },
 
@@ -131,10 +146,12 @@ export const RotinaService = {
     async sincronizarHoje(tenantId) {
         const dia = diaDe()
         if (!diaUtil(dia)) return
+        const ids = (await rotinaDoNegocio(tenantId)).linhas.filter((linha) => linha.auto === 'followUp').map((linha) => linha.id)
+        if (!ids.length) return
         const emDia = (await followUpsVencidos(tenantId)) === 0
         await RotinaDiaModel.updateOne(
             { tenantId, dia },
-            emDia ? { $addToSet: { feitas: 'follow_up' } } : { $pull: { feitas: 'follow_up' } },
+            emDia ? { $addToSet: { feitas: { $each: ids } } } : { $pull: { feitas: { $in: ids } } },
             { upsert: true },
         )
     },
@@ -146,8 +163,11 @@ export const RotinaService = {
         const primeiroRegistro = await RotinaDiaModel.findOne({ tenantId }).sort({ dia: 1 }).lean()
         const inicio = [somarDias(hoje, -DIAS_DA_CONSTANCIA), primeiroRegistro?.dia ?? hoje].sort().at(-1)
 
+        const { linhas } = await rotinaDoNegocio(tenantId)
+        const metaLeads = metaDe(linhas, 'leads')
+        const metaContatos = metaDe(linhas, 'primeirosContatos')
         const [dias, porSituacao, contatados, paraEncerrar, parceiros, parceirosAtivos] = await Promise.all([
-            diasMontados(tenantId, [inicio, segunda].sort()[0], hoje),
+            diasMontados(tenantId, linhas, [inicio, segunda].sort()[0], hoje),
             LeadModel.aggregate([{ $match: { tenantId: idDaConta(tenantId) } }, { $group: { _id: '$status', total: { $sum: 1 } } }]),
             // Inclui quem recebeu e-mail antes de existir a contagem de contatos.
             LeadModel.countDocuments({ tenantId, $or: [{ numeroContatos: { $gt: 0 } }, { ultimoEnvioEm: { $ne: null } }, { status: { $nin: ['novo', 'descartado'] } }] }),
@@ -168,17 +188,17 @@ export const RotinaService = {
                 dia: hoje,
                 percentual: diaDeHoje.percentual,
                 leads: diaDeHoje.contagens.leads,
-                metaLeads: META_LEADS,
+                metaLeads,
                 primeirosContatos: diaDeHoje.contagens.primeirosContatos,
-                metaContatos: META_CONTATOS,
+                metaContatos,
                 followUpsPendentes: diaDeHoje.followUpsPendentes ?? await followUpsVencidos(tenantId),
                 paraEncerrar,
             },
             semana: {
                 leads: semana.reduce((total, dia) => total + dia.contagens.leads, 0),
-                metaLeads: META_LEADS * 5,
+                metaLeads: metaLeads && metaLeads * 5,
                 primeirosContatos: semana.reduce((total, dia) => total + dia.contagens.primeirosContatos, 0),
-                metaContatos: META_CONTATOS * 5,
+                metaContatos: metaContatos && metaContatos * 5,
                 mediaRotina: semana.length ? Math.round(semana.reduce((total, dia) => total + dia.percentual, 0) / semana.length) : 0,
             },
             funil: {

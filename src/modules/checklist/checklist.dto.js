@@ -19,6 +19,7 @@ export function itemDTO(body = {}, { criando = false } = {}) {
         dto.feito = body.feito === true
         dto.feitoEm = dto.feito ? new Date() : null
     }
-    if ('feitoEm' in body) dto.feitoEm = dataDoDia(body.feitoEm)
+    // Data vazia vinda do formulário mantém a que o "feito" acabou de pôr.
+    if (body.feitoEm) dto.feitoEm = dataDoDia(body.feitoEm)
     return dto
 }

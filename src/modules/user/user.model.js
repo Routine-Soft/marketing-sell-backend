@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
 
     // Conversa do Telegram que recebe os avisos da conta (lembrete de follow-up, lead que respondeu). Só vale no dono.
     telegramChatId: { type: String, default: '' },
-    // Listas de preparação que já nasceram com os itens padrão nesta conta (ver módulo checklist).
-    checklistsCriadas: { type: [String], default: [] },
+    // Último negócio em que a pessoa entrou (ver módulo negocio); vazio = o primeiro da conta.
+    negocioAtivo: { type: mongoose.Schema.Types.ObjectId, ref: 'negocios', default: null },
 
     // tenantId aponta pra si mesmo quando o usuário é o dono da conta (admin).
     // Usuários criados depois dentro da mesma conta herdam esse mesmo tenantId.

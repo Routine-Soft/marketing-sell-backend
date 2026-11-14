@@ -17,7 +17,7 @@ export const ParceiroService = {
         if (!parceiro) throw new AppError('Parceiro não encontrado', 404)
         const dados = parceiroDTO(body)
         parceiro.set(dados)
-        if (dados.status && dados.status !== 'listado' && !parceiro.primeiroContatoEm && !('primeiroContatoEm' in dados)) {
+        if (dados.status && dados.status !== 'listado' && !parceiro.primeiroContatoEm) {
             parceiro.primeiroContatoEm = new Date()
         }
         return parceiro.save()

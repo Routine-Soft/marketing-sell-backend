@@ -32,21 +32,21 @@ async function salvarLeads(tenantId, fonte, buscaId, leads) {
 }
 
 export const CaptacaoService = {
-    async opcoes(tenantId) {
+    async opcoes(contaId) {
         return {
             ...OPCOES_DAS_FONTES,
             fontes: Object.values(FONTES).map((f) => ({ id: f.id, nome: f.nome })),
             googleConfigurado: !!process.env.GOOGLE_API_KEY,
-            cotaGoogle: await cotaGoogle(tenantId),
+            cotaGoogle: await cotaGoogle(contaId),
         }
     },
 
-    async buscar(tenantId, usuarioId, body) {
+    async buscar(tenantId, contaId, usuarioId, body) {
         const { fonte, filtros, buscarEmails } = buscaDTO(body)
 
         let paginasDisponiveis = 0
         if (fonte.id === 'google') {
-            paginasDisponiveis = (await cotaGoogle(tenantId)).restante
+            paginasDisponiveis = (await cotaGoogle(contaId)).restante
             if (paginasDisponiveis <= 0) {
                 throw new AppError('A cota de buscas no Google deste mês acabou. Fale com o suporte para aumentar.', 429)
             }

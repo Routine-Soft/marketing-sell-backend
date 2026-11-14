@@ -109,6 +109,28 @@ export const MENSAGENS_EN = {
     'Item atualizado': 'Item updated',
     'Item excluído': 'Item deleted',
 
+    // Negócios e modelos
+    'Abas inválidas': 'Invalid tabs',
+    'Informe o nome do modelo': 'Enter the template name',
+    'Rotina inválida': 'Invalid routine',
+    'Rotina grande demais': 'Routine too large',
+    'Informe o nome do bloco': 'Enter the block name',
+    'Informe o nome da tarefa': 'Enter the task name',
+    'Escolha o bloco da tarefa': 'Choose the task block',
+    'Escolha o que a linha automática conta': 'Choose what the automatic row counts',
+    'Informe a meta da tarefa que se marca sozinha': 'Enter the goal of the self-checking task',
+    'Modelo não encontrado': 'Template not found',
+    'Negócio não encontrado': 'Business not found',
+    'Saia deste negócio antes de excluir': 'Leave this business before deleting it',
+    'A conta precisa ter pelo menos um negócio': 'The account needs at least one business',
+    'Negócio criado': 'Business created',
+    'Negócio atualizado': 'Business updated',
+    'Negócio excluído': 'Business deleted',
+    'Rotina salva': 'Routine saved',
+    'Modelo salvo': 'Template saved',
+    'Modelo excluído': 'Template deleted',
+    'Modelo aplicado': 'Template applied',
+
     // Geral
     'Erro interno do servidor': 'Internal server error',
     'Registro não encontrado': 'Record not found',

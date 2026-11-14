@@ -12,6 +12,7 @@ import { rotinaRoutes } from "./src/modules/rotina/rotina.routes.js";
 import { parceiroRoutes } from "./src/modules/parceiro/parceiro.routes.js";
 import { comunidadeRoutes } from "./src/modules/comunidade/comunidade.routes.js";
 import { checklistRoutes } from "./src/modules/checklist/checklist.routes.js";
+import { negocioRoutes } from "./src/modules/negocio/negocio.routes.js";
 import { iniciarFollowUp } from "./src/modules/follow-up/follow-up.rotinas.js";
 import { iniciarFilaDeEnvios } from "./src/modules/envio/envio.fila.js";
 import { iniciarFilaDeEmails } from "./src/modules/email-site/email-site.fila.js";
@@ -26,12 +27,13 @@ await fastify.register(fastifyCors, {
 
 // Avisos e erros no idioma do site (Accept-Language): troca o campo "message" das respostas em JSON.
 fastify.addHook('onSend', async (req, reply, payload) => {
-  if (idiomaDaRequisicao(req) !== 'en' || typeof payload !== 'string' || !payload.includes('"message"')) return payload
+  const idioma = idiomaDaRequisicao(req)
+  if (idioma === 'pt' || typeof payload !== 'string' || !payload.includes('"message"')) return payload
   if (!String(reply.getHeader('content-type') ?? '').includes('application/json')) return payload
   try {
     const corpo = JSON.parse(payload)
     if (typeof corpo?.message !== 'string') return payload
-    corpo.message = traduzirMensagem(corpo.message, 'en')
+    corpo.message = traduzirMensagem(corpo.message, idioma)
     return JSON.stringify(corpo)
   } catch {
     return payload
@@ -65,6 +67,7 @@ await fastify.register(rotinaRoutes, { prefix: '/api' })
 await fastify.register(parceiroRoutes, { prefix: '/api' })
 await fastify.register(comunidadeRoutes, { prefix: '/api' })
 await fastify.register(checklistRoutes, { prefix: '/api' })
+await fastify.register(negocioRoutes, { prefix: '/api' })
 
 const start = async () => {
   try {

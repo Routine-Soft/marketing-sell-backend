@@ -1,7 +1,7 @@
 import { ImapFlow } from 'imapflow'
 import RemetenteModel from '../remetente/remetente.model.js'
 import LeadModel, { SEM_RESPOSTA } from '../lead/lead.model.js'
-import UserModel from '../user/user.model.js'
+import { negocioComDono } from '../negocio/negocio.contas.js'
 import { pararFollowUp } from '../lead/lead.contato.js'
 import { RotinaService } from '../rotina/rotina.service.js'
 import { descriptografar } from '../shared/utils/criptografia.js'
@@ -71,8 +71,8 @@ export async function detectarRespostas(log) {
             await pararFollowUp(lead, quando)
             await lead.save()
             await RotinaService.sincronizarHoje(lead.tenantId)
-            const dono = await UserModel.findById(lead.tenantId)
-            avisarNoTelegram(chatDoTelegram(dono), `📩 ${lead.nome} respondeu o seu e-mail!\n${lead.email}${lead.telefone ? ` • ${lead.telefone}` : ''}\nOs follow-ups automáticos pararam: agora a resposta é sua.`)
+            const { negocio, dono } = await negocioComDono(lead.tenantId)
+            avisarNoTelegram(chatDoTelegram(dono), `📩 ${lead.nome} respondeu o seu e-mail${negocio ? ` (${negocio.nome})` : ''}!\n${lead.email}${lead.telefone ? ` • ${lead.telefone}` : ''}\nOs follow-ups automáticos pararam: agora a resposta é sua.`)
         }
     }
 }
