@@ -33,6 +33,13 @@ export function filtroLeadsDTO(tenantId, query = {}) {
     return filtro
 }
 
+// Ordem da lista: mais recentes primeiro (padrão) ou mais antigos primeiro, pela data em que entraram no sistema.
+// Com o filtro de follow-up, a ordem é a da data do follow-up (quem está mais atrasado primeiro).
+export function ordemDTO(query = {}) {
+    if (query.followUp) return { proximoFollowUpEm: 1, _id: 1 }
+    return query.ordem === 'antigos' ? { createdAt: 1, _id: 1 } : { createdAt: -1, _id: -1 }
+}
+
 export function paginacaoDTO(query = {}) {
     const pagina = Math.max(1, Number.parseInt(query.pagina, 10) || 1)
     const porPagina = Math.min(100, Math.max(1, Number.parseInt(query.porPagina, 10) || 25))

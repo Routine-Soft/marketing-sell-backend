@@ -4,7 +4,7 @@ import { EmailSiteService } from '../email-site/email-site.service.js'
 import { SEM_RESPOSTA } from './lead.model.js'
 import { registrarContato, pararFollowUp, proximoFollowUp } from './lead.contato.js'
 import { RotinaService } from '../rotina/rotina.service.js'
-import { filtroLeadsDTO, paginacaoDTO, createLeadDTO, updateLeadDTO, contatoDTO, selecaoDTO } from './lead.dto.js'
+import { filtroLeadsDTO, ordemDTO, paginacaoDTO, createLeadDTO, updateLeadDTO, contatoDTO, selecaoDTO } from './lead.dto.js'
 import ContatoModel from './contato.model.js'
 import { leadsParaCsv } from './lead.csv.js'
 import AppError from '../../errors/AppError.js'
@@ -16,7 +16,7 @@ export const LeadService = {
         const filtro = filtroLeadsDTO(tenantId, query)
         const { pagina, porPagina } = paginacaoDTO(query)
         const [itens, total] = await Promise.all([
-            LeadModel.find(filtro).sort(query.followUp ? { proximoFollowUpEm: 1, _id: 1 } : { createdAt: -1, _id: -1 }).skip((pagina - 1) * porPagina).limit(porPagina),
+            LeadModel.find(filtro).sort(ordemDTO(query)).skip((pagina - 1) * porPagina).limit(porPagina),
             LeadModel.countDocuments(filtro),
         ])
         return { itens, total, pagina, porPagina }
@@ -40,7 +40,7 @@ export const LeadService = {
     },
 
     async exportar(tenantId, query, idioma) {
-        const leads = await LeadModel.find(filtroLeadsDTO(tenantId, query)).sort({ createdAt: -1 }).limit(LIMITE_EXPORTACAO).lean()
+        const leads = await LeadModel.find(filtroLeadsDTO(tenantId, query)).sort(ordemDTO(query)).limit(LIMITE_EXPORTACAO).lean()
         return leadsParaCsv(leads, idioma)
     },
 
