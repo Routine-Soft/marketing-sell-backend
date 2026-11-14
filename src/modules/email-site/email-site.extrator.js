@@ -1,6 +1,5 @@
 import dns from 'node:dns/promises'
 import net from 'node:net'
-import { ehGmailOuYahoo } from '../shared/utils/provedor-email.js'
 
 // Procura um e-mail de contato no site de um lead: página inicial e as páginas de contato/sobre mais comuns.
 // Baseado no script de leads com Google Places, com proteções: só endereços públicos (nada de rede interna),
@@ -116,8 +115,8 @@ export async function encontrarEmailNoSite(site) {
             base = new URL(base.href.replace(/^https:/, 'http:'))
             html = await baixarPagina(base)
         }
-        // Só vale e-mail do Gmail ou do Yahoo; o primeiro que aparecer já serve.
-        achados.push(...emailsDaPagina(html).filter(ehGmailOuYahoo))
+        // O primeiro e-mail que aparecer já serve.
+        achados.push(...emailsDaPagina(html))
         if (achados.length) break
     }
     return achados[0] ?? ''

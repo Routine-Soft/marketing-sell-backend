@@ -79,3 +79,9 @@ export function idsDTO(body = {}) {
     if (!ids.length) throw new AppError('Selecione pelo menos um lead', 400)
     return ids.slice(0, 1000)
 }
+
+// Ações em lote: os leads escolhidos ou "todos" os da lista com os filtros que estão na tela.
+export function selecaoDTO(tenantId, body = {}) {
+    if (body.todos === true) return filtroLeadsDTO(tenantId, body.filtros ?? {})
+    return { tenantId, _id: { $in: idsDTO(body) } }
+}

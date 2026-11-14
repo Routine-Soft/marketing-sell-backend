@@ -131,7 +131,17 @@ export const MENSAGENS_EN = {
     'Modelo excluído': 'Template deleted',
     'Modelo aplicado': 'Template applied',
 
+    // Ideias de vídeo e de artigo
+    'Escreva o título, o roteiro ou a legenda': 'Write the title, the script or the caption',
+    'Ideia não encontrada': 'Idea not found',
+    'Ideia adicionada': 'Idea added',
+    'Ideia atualizada': 'Idea updated',
+    'Ideia excluída': 'Idea deleted',
+
     // Geral
     'Erro interno do servidor': 'Internal server error',
     'Registro não encontrado': 'Record not found',
+    'A base de CNPJs ainda está sendo baixada da Receita. Tente de novo mais tarde.': 'The CNPJ database is still being downloaded from the Brazilian Federal Revenue. Try again later.',
+    'Escolha pelo menos uma atividade': 'Choose at least one activity',
+    'Atividades inválidas': 'Invalid activities',
 }

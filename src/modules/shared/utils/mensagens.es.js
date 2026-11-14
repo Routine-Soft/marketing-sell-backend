@@ -112,4 +112,12 @@ export const MENSAGENS_ES = {
     'Modelo excluído': 'Plantilla eliminada',
     'Modelo aplicado': 'Plantilla aplicada',
     'Erro interno do servidor': 'Error interno del servidor',
+    'Escreva o título, o roteiro ou a legenda': 'Escribe el título, el guion o el texto de la publicación',
+    'Ideia não encontrada': 'Idea no encontrada',
+    'Ideia adicionada': 'Idea agregada',
+    'Ideia atualizada': 'Idea actualizada',
+    'Ideia excluída': 'Idea eliminada',
+    'A base de CNPJs ainda está sendo baixada da Receita. Tente de novo mais tarde.': 'La base de CNPJ todavía se está descargando de la Receita Federal. Inténtalo de nuevo más tarde.',
+    'Escolha pelo menos uma atividade': 'Elige al menos una actividad',
+    'Atividades inválidas': 'Actividades inválidas',
 }

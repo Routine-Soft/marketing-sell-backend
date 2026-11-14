@@ -13,6 +13,8 @@ const negocioSchema = new mongoose.Schema({
     // Modelo de onde o negócio nasceu (só para mostrar).
     modelo: { type: String, default: '' },
     rotina: { type: rotinaSchema, default: () => ({}) },
+    // Atividades (CNAE) que o negócio procura na fonte de CNPJs recém-abertos; entram na importação mensal.
+    cnaesCnpj: { type: [String], default: [] },
 }, { timestamps: true })
 
 negocioSchema.index({ contaId: 1, createdAt: 1 })

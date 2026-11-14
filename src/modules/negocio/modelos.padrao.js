@@ -46,6 +46,7 @@ const LINHAS_DA_PLANILHA = [
     { id: 'follow_up', bloco: 'follow_up', titulo: 'Follow-up de quem está com data vencida (aba Leads)', auto: 'followUp' },
     { id: 'follow_ups_no_dia', bloco: 'follow_up', tipo: 'automatico', titulo: 'Follow-ups feitos no dia', contagem: 'followUps' },
 
+    { id: 'video_roteiro', bloco: 'video', titulo: 'Criar roteiro e legenda (Ideias de vídeo)', meta: 1 },
     { id: 'video_vertical', bloco: 'video', titulo: 'Gravar 1 vídeo vertical', meta: 1 },
     { id: 'video_horizontal', bloco: 'video', titulo: 'Gravar 1 vídeo horizontal (YouTube)', meta: 1 },
     { id: 'postar_tiktok', bloco: 'video', titulo: 'Postar no TikTok' },
@@ -165,6 +166,7 @@ export const MODELOS_DO_SISTEMA = [
                 { id: 'contato_ligacao', bloco: 'contato', tipo: 'opcional', titulo: 'Ligação' },
                 { id: 'contato_whatsapp', bloco: 'contato', tipo: 'opcional', titulo: 'WhatsApp' },
                 { id: 'follow_up', bloco: 'follow_up', titulo: 'Follow-up de quem está com data vencida', auto: 'followUp' },
+                { id: 'video_roteiro', bloco: 'redes', titulo: 'Criar roteiro e legenda (Ideias de vídeo)', meta: 1 },
                 { id: 'postar', bloco: 'redes', titulo: 'Postar 1 conteúdo', meta: 1 },
                 { id: 'comentar_posts', bloco: 'redes', titulo: 'Comentar em 5 posts de possíveis clientes', meta: 5 },
                 { id: 'atualizar_leads', bloco: 'fechamento', titulo: 'Atualizar status dos leads e olhar o Painel' },

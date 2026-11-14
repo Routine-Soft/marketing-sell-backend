@@ -4,7 +4,8 @@ import { EmailSiteService } from '../email-site/email-site.service.js'
 import { SEM_RESPOSTA } from './lead.model.js'
 import { registrarContato, pararFollowUp, proximoFollowUp } from './lead.contato.js'
 import { RotinaService } from '../rotina/rotina.service.js'
-import { filtroLeadsDTO, paginacaoDTO, createLeadDTO, updateLeadDTO, contatoDTO, idsDTO } from './lead.dto.js'
+import { filtroLeadsDTO, paginacaoDTO, createLeadDTO, updateLeadDTO, contatoDTO, selecaoDTO } from './lead.dto.js'
+import ContatoModel from './contato.model.js'
 import { leadsParaCsv } from './lead.csv.js'
 import AppError from '../../errors/AppError.js'
 
@@ -89,12 +90,16 @@ export const LeadService = {
         return null
     },
 
+    // Os selecionados ({ ids }) ou todos os que a lista mostra com os filtros de agora ({ todos: true, filtros }).
     async excluirVarios(tenantId, body) {
-        const resultado = await LeadModel.deleteMany({ _id: { $in: idsDTO(body) }, tenantId })
+        const leads = await LeadModel.find(selecaoDTO(tenantId, body), '_id').lean()
+        const ids = leads.map((lead) => lead._id)
+        const resultado = await LeadModel.deleteMany({ _id: { $in: ids }, tenantId })
+        await ContatoModel.deleteMany({ tenantId, leadId: { $in: ids } })
         return resultado.deletedCount
     },
 
     async buscarEmails(tenantId, body) {
-        return await EmailSiteService.enfileirar(tenantId, { ids: idsDTO(body) })
+        return await EmailSiteService.enfileirar(tenantId, { filtro: selecaoDTO(tenantId, body) })
     },
 }

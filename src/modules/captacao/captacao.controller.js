@@ -2,8 +2,13 @@ import { CaptacaoService } from './captacao.service.js'
 
 export const CaptacaoController = {
     async opcoes(req, reply) {
-        const opcoes = await CaptacaoService.opcoes(req.user.contaId)
+        const opcoes = await CaptacaoService.opcoes(req.user.contaId, req.user.tenantId)
         return reply.send({ success: true, data: opcoes })
+    },
+
+    async cnaes(req, reply) {
+        const lista = await CaptacaoService.cnaes(req.query.busca)
+        return reply.send({ success: true, data: lista })
     },
 
     async buscar(req, reply) {

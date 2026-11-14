@@ -13,7 +13,9 @@ import { parceiroRoutes } from "./src/modules/parceiro/parceiro.routes.js";
 import { comunidadeRoutes } from "./src/modules/comunidade/comunidade.routes.js";
 import { checklistRoutes } from "./src/modules/checklist/checklist.routes.js";
 import { negocioRoutes } from "./src/modules/negocio/negocio.routes.js";
+import { ideiaRoutes } from "./src/modules/ideia/ideia.routes.js";
 import { iniciarFollowUp } from "./src/modules/follow-up/follow-up.rotinas.js";
+import { iniciarImportacaoDeCnpjs } from "./src/modules/captacao/cnpj/cnpj.rotina.js";
 import { iniciarFilaDeEnvios } from "./src/modules/envio/envio.fila.js";
 import { iniciarFilaDeEmails } from "./src/modules/email-site/email-site.fila.js";
 
@@ -68,6 +70,7 @@ await fastify.register(parceiroRoutes, { prefix: '/api' })
 await fastify.register(comunidadeRoutes, { prefix: '/api' })
 await fastify.register(checklistRoutes, { prefix: '/api' })
 await fastify.register(negocioRoutes, { prefix: '/api' })
+await fastify.register(ideiaRoutes, { prefix: '/api' })
 
 const start = async () => {
   try {
@@ -80,6 +83,7 @@ const start = async () => {
       iniciarFilaDeEmails(fastify.log)
       iniciarFilaDeEnvios(fastify.log)
       iniciarFollowUp(fastify.log)
+      iniciarImportacaoDeCnpjs(fastify.log)
     }
   } catch (err) {
     fastify.log.error(err)
