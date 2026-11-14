@@ -3,6 +3,12 @@ import LeadModel from '../lead/lead.model.js'
 import BuscaModel from '../captacao/busca.model.js'
 import RemetenteModel from '../remetente/remetente.model.js'
 import EnvioModel from '../envio/envio.model.js'
+import ContatoModel from '../lead/contato.model.js'
+import RotinaDiaModel from '../rotina/rotina-dia.model.js'
+import AvisoModel from '../follow-up/aviso.model.js'
+import ParceiroModel from '../parceiro/parceiro.model.js'
+import ComunidadeModel from '../comunidade/comunidade.model.js'
+import ChecklistModel from '../checklist/checklist.model.js'
 import { cotaPadrao, usoGoogleNoMes } from '../captacao/captacao.cota.js'
 import AppError from '../../errors/AppError.js'
 
@@ -49,6 +55,12 @@ export const ContaAdminService = {
             BuscaModel.deleteMany({ tenantId }),
             RemetenteModel.deleteMany({ tenantId }),
             EnvioModel.deleteMany({ tenantId }),
+            ContatoModel.deleteMany({ tenantId }),
+            RotinaDiaModel.deleteMany({ tenantId }),
+            AvisoModel.deleteMany({ tenantId }),
+            ParceiroModel.deleteMany({ tenantId }),
+            ComunidadeModel.deleteMany({ tenantId }),
+            ChecklistModel.deleteMany({ tenantId }),
         ])
         await UserModel.deleteMany({ tenantId })
         return null

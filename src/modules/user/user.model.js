@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema({
     // Páginas de busca no Google por mês (só vale no dono da conta). null = padrão do .env (GOOGLE_COTA_MENSAL).
     cotaGoogleMensal: { type: Number, default: null },
 
+    // Conversa do Telegram que recebe os avisos da conta (lembrete de follow-up, lead que respondeu). Só vale no dono.
+    telegramChatId: { type: String, default: '' },
+    // Listas de preparação que já nasceram com os itens padrão nesta conta (ver módulo checklist).
+    checklistsCriadas: { type: [String], default: [] },
+
     // tenantId aponta pra si mesmo quando o usuário é o dono da conta (admin).
     // Usuários criados depois dentro da mesma conta herdam esse mesmo tenantId.
     tenantId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },

@@ -15,6 +15,8 @@ const envioSchema = new mongoose.Schema({
     // Já com {nome}, {contato}, {cidade} e {estado} trocados e o rodapé no final: sai exatamente o que foi pedido.
     assunto: { type: String, default: '' },
     corpoHtml: { type: String, default: '' },
+    // 0 = e-mail pedido na tela; 1, 2 ou 3 = follow-up automático (ver follow-up/follow-up.email.js).
+    followUp: { type: Number, default: 0 },
     status: { type: String, enum: ENVIO_STATUS, default: 'enviado' },
     erro: { type: String, default: '' },
     reservadoEm: { type: Date, default: null },

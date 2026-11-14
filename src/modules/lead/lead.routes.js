@@ -6,10 +6,12 @@ export async function leadRoutes(fastify) {
     const daConta = { preHandler: authorize(['admin', 'membro', 'super_admin']) }
 
     fastify.get('/leads', daConta, LeadController.listar)
+    fastify.post('/leads', daConta, LeadController.criar)
     fastify.get('/leads/resumo', daConta, LeadController.resumo)
     fastify.get('/leads/exportar', daConta, LeadController.exportar)
     fastify.post('/leads/emails', daConta, LeadController.buscarEmails)
     fastify.post('/leads/excluir', daConta, LeadController.excluirVarios)
+    fastify.post('/leads/:id/contatos', daConta, LeadController.registrarContato)
     fastify.patch('/leads/:id', daConta, LeadController.atualizar)
     fastify.delete('/leads/:id', daConta, LeadController.excluir)
 }

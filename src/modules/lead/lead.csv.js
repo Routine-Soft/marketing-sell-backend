@@ -6,12 +6,17 @@ const COLUNAS = [
     ['telefone', 'Telefone', 'Phone'],
     ['email', 'E-mail', 'Email'],
     ['site', 'Site', 'Website'],
+    ['instagram', 'Instagram', 'Instagram'],
+    ['origem', 'Origem', 'Origin'],
     ['endereco', 'Endereço', 'Address'],
     ['cidade', 'Cidade', 'City'],
     ['estado', 'Estado', 'State'],
     ['cep', 'CEP', 'ZIP'],
     ['fonte', 'Fonte', 'Source'],
     ['status', 'Situação', 'Status'],
+    ['numeroContatos', 'Nº de contatos', 'Contacts'],
+    ['ultimoContatoEm', 'Último contato', 'Last contact'],
+    ['proximoFollowUpEm', 'Próximo follow-up', 'Next follow-up'],
     ['observacao', 'Observação', 'Notes'],
 ]
 
@@ -24,7 +29,7 @@ function celula(valor) {
 
 export function leadsParaCsv(leads, idioma) {
     const cabecalho = COLUNAS.map(([, pt, en]) => celula(idioma === 'en' ? en : pt)).join(',')
-    const linhas = leads.map((lead) => COLUNAS.map(([campo]) => celula(lead[campo])).join(','))
+    const linhas = leads.map((lead) => COLUNAS.map(([campo]) => celula(lead[campo] instanceof Date ? lead[campo].toISOString().slice(0, 10) : lead[campo])).join(','))
     // BOM no início: o Excel reconhece os acentos.
     return `﻿${[cabecalho, ...linhas].join('\r\n')}`
 }

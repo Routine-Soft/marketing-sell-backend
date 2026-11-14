@@ -2,6 +2,7 @@ import EnvioModel from './envio.model.js'
 import RemetenteModel from '../remetente/remetente.model.js'
 import LeadModel from '../lead/lead.model.js'
 import { cotaDoEmail, inicioDoProximoDia, pausaDoGmail, pausarGmail } from './envio.cota.js'
+import { registrarContato } from '../lead/lead.contato.js'
 import { enviarPeloGmail, limiteDoGmail, senhaRecusada } from './envio.gmail.js'
 
 // Fila de e-mails para leads: cada Gmail manda um por vez, com 30 a 60 segundos entre um e outro (rajada de
@@ -70,8 +71,9 @@ async function processarProximo(email, log) {
         ultimoEnvioEm: agora,
         ultimoEnvioNegocio: remetente.nomeNegocio,
     })
-    // Só avança quem ainda era "novo": não rebaixa lead já interessado ou cliente.
-    if (envio.leadId) await LeadModel.updateOne({ _id: envio.leadId, status: 'novo' }, { $set: { status: 'contatado' } })
+    // Conta como contato: "novo" vira "contatado" e o próximo follow-up fica marcado (não rebaixa quem já avançou).
+    const lead = envio.leadId && await LeadModel.findById(envio.leadId)
+    if (lead) await registrarContato(lead, 'email', { automatico: envio.followUp > 0, quando: agora })
     esperar(email)
 }
 

@@ -24,7 +24,7 @@ export function createUserDTO(body) {
 export function updateMeDTO(body, role) {
     const allowed = ['nomeCompleto', 'email', 'telefone']
     if (['admin', 'super_admin'].includes(role)) {
-        allowed.push('nomeEmpresa')
+        allowed.push('nomeEmpresa', 'telegramChatId')
     }
 
     const dto = Object.fromEntries(
@@ -33,6 +33,7 @@ export function updateMeDTO(body, role) {
     if ('nomeCompleto' in dto && !dto.nomeCompleto) delete dto.nomeCompleto
     if ('email' in dto && !dto.email) delete dto.email
     if ('nomeEmpresa' in dto && !dto.nomeEmpresa) delete dto.nomeEmpresa
+    if (dto.telegramChatId && !/^-?\d{1,20}$/.test(dto.telegramChatId)) throw new AppError('O ID da conversa do Telegram tem só números', 400)
     return dto
 }
 

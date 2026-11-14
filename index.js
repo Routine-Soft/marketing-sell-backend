@@ -8,6 +8,11 @@ import { captacaoRoutes } from "./src/modules/captacao/captacao.routes.js";
 import { leadRoutes } from "./src/modules/lead/lead.routes.js";
 import { remetenteRoutes } from "./src/modules/remetente/remetente.routes.js";
 import { envioRoutes } from "./src/modules/envio/envio.routes.js";
+import { rotinaRoutes } from "./src/modules/rotina/rotina.routes.js";
+import { parceiroRoutes } from "./src/modules/parceiro/parceiro.routes.js";
+import { comunidadeRoutes } from "./src/modules/comunidade/comunidade.routes.js";
+import { checklistRoutes } from "./src/modules/checklist/checklist.routes.js";
+import { iniciarFollowUp } from "./src/modules/follow-up/follow-up.rotinas.js";
 import { iniciarFilaDeEnvios } from "./src/modules/envio/envio.fila.js";
 import { iniciarFilaDeEmails } from "./src/modules/email-site/email-site.fila.js";
 
@@ -56,6 +61,10 @@ await fastify.register(captacaoRoutes, { prefix: '/api' })
 await fastify.register(leadRoutes, { prefix: '/api' })
 await fastify.register(remetenteRoutes, { prefix: '/api' })
 await fastify.register(envioRoutes, { prefix: '/api' })
+await fastify.register(rotinaRoutes, { prefix: '/api' })
+await fastify.register(parceiroRoutes, { prefix: '/api' })
+await fastify.register(comunidadeRoutes, { prefix: '/api' })
+await fastify.register(checklistRoutes, { prefix: '/api' })
 
 const start = async () => {
   try {
@@ -63,8 +72,12 @@ const start = async () => {
     await db()
 
     await fastify.listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
-    iniciarFilaDeEmails(fastify.log)
-    iniciarFilaDeEnvios(fastify.log)
+    // SEM_ROTINAS=1: sobe só a API (teste no computador), sem as filas e os lembretes que já rodam no servidor.
+    if (process.env.SEM_ROTINAS !== '1') {
+      iniciarFilaDeEmails(fastify.log)
+      iniciarFilaDeEnvios(fastify.log)
+      iniciarFollowUp(fastify.log)
+    }
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)

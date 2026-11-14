@@ -28,14 +28,25 @@ Dois repositórios irmãos em `~/Repositorios/`: **`marketing-sell-backend`** (e
   - `envio.template.js`: `{nome}`, `{contato}`, `{cidade}` (escapados) e rodapé no fim. Texto com HTML de bloco (`<p>`, `<br>`, `<div>`...) é usado como está; só texto simples tem as quebras de linha viradas em `<br>`.
   - Rotas: `POST /envios/previa`, `POST /envios` (não reenvia ao mesmo lead pelo mesmo negócio sem `reenviar: true`), `POST /envios/cancelar`.
   - No lead: `envioPendente`, `ultimoEnvioEm`, `ultimoEnvioNegocio`, `envioErro`; lead "novo" vira "contatado" ao receber.
-- Excluir conta (super admin) apaga também remetentes e envios.
+- **Follow-up** (veio da planilha "Sonélia — Rotina de Marketing e Vendas"):
+  - No lead: `primeiroContatoEm`, `canalPrimeiroContato`, `ultimoContatoEm`, `numeroContatos`, `proximoFollowUpEm`, `respondeuEm`. Situações: `novo → contatado → respondeu → interessado → demo → teste_gratis → cliente`; `descartado` = perdido.
+  - `lead/lead.contato.js`: `registrarContato` (conta o contato, grava em `contato.model.js` e marca o próximo follow-up: 3, 7 e 14 dias depois do primeiro; 4 contatos sem resposta = "para encerrar") e `pararFollowUp`. Rota `POST /leads/:id/contatos { canal }`; e-mail enviado pela fila também conta como contato. Lista: `followUp=vencido|encerrar`.
+  - `follow-up/` (sobe com o servidor, `follow-up.rotinas.js`): lembrete no **Telegram** às 8h de Brasília em dia útil (`follow-up.lembrete.js`, um por conta por dia via `aviso.model.js`); follow-up automático por e-mail (`follow-up.email.js`: textos `followUps` do remetente com `followUpAtivo`, só para quem recebeu o 1º e-mail daquele negócio, dia útil das 9h às 18h); leitura de respostas por IMAP com a mesma senha de app (`follow-up.respostas.js`: lead vira `respondeu`, follow-ups param, aviso no Telegram).
+  - Telegram: `shared/utils/telegram.js`, bot em `TELEGRAM_BOT_TOKEN` (o mesmo do Sonelia). Destino = `telegramChatId` do dono da conta (Minha conta); o super admin cai em `TELEGRAM_CHAT_ID`.
+- **O sistema tem a cara da planilha** "Sonélia — Rotina de Marketing e Vendas" (pedido do Stanley em 2026-11-13): cada aba da planilha é uma tela, com grade, cabeçalho na cor da aba e células coloridas pelo estado.
+- `rotina`: grade da rotina diária, segunda a sexta. `rotina.tarefas.js` = `LINHAS` fixas, na ordem da planilha: tarefa (conta no %; com `auto`, o sistema marca sozinho pela contagem do dia), `opcional` (canal usado, não conta) e `automatico` (só mostra a contagem). `rotina-dia.model.js` = o que foi marcado. `GET /rotina/grade?de=&ate=` (padrão: semana atual e a seguinte; `inicio` = primeiro dia de uso, antes dele nada fica vermelho), `PATCH /rotina/:dia { linhaId, feita }`, `GET /rotina/painel` (hoje, semana, funil, constância, parceiros). Dia = dia de Brasília (`shared/utils/dia.js`).
+- `parceiro` (aba Parceiros), `comunidade` (aba Comunidades e eventos) e `checklist` (abas Preparação e Anúncios: `GET/POST /checklists/:lista`, `PATCH/DELETE /checklists/itens/:id`; a lista nasce com os itens de `checklist.padrao.js` e isso fica anotado em `checklistsCriadas` do dono). As telas salvam uma célula por vez: os DTOs só leem os campos enviados (`shared/utils/campos.js`).
+- Lead cadastrado à mão: `POST /leads { nome, ... }` (`fonte: 'manual'`, campos `instagram` e `origem`).
+- `SEM_ROTINAS=1` sobe só a API, sem as filas e os lembretes (para testar no computador com o servidor ligado).
+- Excluir conta (super admin) apaga também remetentes, envios, contatos, rotina, avisos, parceiros, comunidades e checklists.
 - `shared`: middlewares (`authenticate`, `authorize`), `idioma.js` + `mensagens.en.js` (mensagem nova da API = tradução nova lá).
 - Registrar módulo novo em `index.js` (`fastify.register(xRoutes, { prefix: '/api' })`).
 
 ## Frontend (`../marketing-sell-frontend/src/`)
 - Base copiada do Sonelia (tema claro/rosa/escuro com marca índigo, `ui.css`, Modal, CampoSenha, Sidebar, PWA).
-- `modules/user`, `modules/captacao` (tela de fontes + `FiltrosDaFonte.jsx`), `modules/lead` (lista vira cartões no celular), `pages/Home`.
-- `modules/remetente` (tela Remetentes no menu "Conta": cartão "Envios de hoje" com barra por Gmail e cancelar fila) e `modules/envio` (`EnviarEmailModal`, aberto pelo botão "Enviar e-mail" na barra de selecionados em Leads).
+- **Visual de planilha**: `styles/planilha.css` (classes `.plan`, `.plan-wrap`, `.plan-titulo`, uma rolagem só: a página rola na vertical e a grade só rola para o lado quando não cabe; estados `data-estado="feito|falta|inativo|aviso|destaque|info"`, cores `--aba-*`), `components/Sidebar/abas.js` (as abas da planilha no menu lateral, com a cor de cada uma; não há barra de abas embaixo) e `components/Planilha` (`Planilha.jsx` = tabela editável com linha nova no fim, `Celulas.jsx`, `TelaDePlanilha.jsx`). Aba nova = item em `abas.js` + rota + tela com `TelaDePlanilha`.
+- Abas: `/home` = Rotina diária (`modules/rotina/components/RotinaDiaria.jsx`, grade tarefas × dias), `/painel` (`Painel.jsx`), `/leads` (planilha com as colunas da aba Leads, linha nova no topo, coluna do nome fixa), `/parceiros`, `/preparacao` e `/anuncios` (`modules/checklist`), `/comunidades`. `hooks/useLista.js` serve as abas simples.
+- Fora das abas (menu "Ferramentas" e "Conta"): `modules/captacao` (Buscar leads), `modules/remetente` (cartão "Envios de hoje" com barra por Gmail e cancelar fila), `modules/envio` (`EnviarEmailModal`, aberto pela barra de selecionados em Leads), `modules/user`.
 - `.card` do `ui.css` não tem padding: cada tela define o seu. Textarea usa `className="input textarea"`.
 - Textos: `tr('texto em português')`; inglês em `src/i18n/en.js`.
 - `.npmrc` com `legacy-peer-deps` (o npm 10 falha nas dependências opcionais do Vite sem isso).

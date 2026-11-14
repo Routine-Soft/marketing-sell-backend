@@ -19,9 +19,19 @@ export const LeadController = {
         return reply.send({ success: true, data: { csv, nomeArquivo } })
     },
 
+    async criar(req, reply) {
+        const lead = await LeadService.criar(req.user.tenantId, req.body)
+        return reply.code(201).send({ success: true, data: lead, message: 'Lead adicionado' })
+    },
+
     async atualizar(req, reply) {
         const lead = await LeadService.atualizar(req.user.tenantId, req.params.id, req.body)
         return reply.send({ success: true, data: lead, message: 'Lead atualizado' })
+    },
+
+    async registrarContato(req, reply) {
+        const lead = await LeadService.registrarContato(req.user.tenantId, req.params.id, req.body)
+        return reply.send({ success: true, data: lead, message: 'Contato registrado' })
     },
 
     async excluir(req, reply) {

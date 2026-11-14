@@ -80,6 +80,35 @@ export const MENSAGENS_EN = {
     '1 e-mail tirado da fila': '1 email removed from the queue',
     '{0} e-mails tirados da fila': '{0} emails removed from the queue',
 
+    // Follow-up e rotina
+    'Escolha por onde foi o contato': 'Choose how the contact was made',
+    'Contato registrado': 'Contact logged',
+    'O ID da conversa do Telegram tem só números': 'The Telegram chat ID has only numbers',
+    'Data inválida': 'Invalid date',
+    'Tarefa não encontrada neste dia': 'Task not found on this day',
+    'Esta tarefa é marcada sozinha pelo sistema': 'This task is checked automatically by the system',
+    'Período inválido': 'Invalid period',
+
+    // Abas da planilha: leads à mão, parceiros, comunidades e listas de preparação
+    'Lead adicionado': 'Lead added',
+    'Informe o nome': 'Enter the name',
+    'Tipo inválido': 'Invalid type',
+    'Canal inválido': 'Invalid channel',
+    'Parceiro não encontrado': 'Partner not found',
+    'Parceiro adicionado': 'Partner added',
+    'Parceiro atualizado': 'Partner updated',
+    'Parceiro excluído': 'Partner deleted',
+    'Registro não encontrado': 'Record not found',
+    'Registro adicionado': 'Record added',
+    'Registro atualizado': 'Record updated',
+    'Registro excluído': 'Record deleted',
+    'Lista não encontrada': 'List not found',
+    'Informe a tarefa': 'Enter the task',
+    'Item não encontrado': 'Item not found',
+    'Item adicionado': 'Item added',
+    'Item atualizado': 'Item updated',
+    'Item excluído': 'Item deleted',
+
     // Geral
     'Erro interno do servidor': 'Internal server error',
     'Registro não encontrado': 'Record not found',

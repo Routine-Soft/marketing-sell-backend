@@ -23,6 +23,14 @@ const remetenteSchema = new mongoose.Schema({
     // Vai no fim de todo e-mail: a lei dos EUA (CAN-SPAM) pede endereço físico e um jeito de pedir para não receber mais.
     rodape: { type: String, default: '' },
 
+    // Follow-up automático: 2º, 3º e 4º e-mail (3, 7 e 14 dias depois do primeiro) para quem não respondeu.
+    // Texto vazio = aquele follow-up não sai por e-mail (o lead aparece só no lembrete do Telegram).
+    followUpAtivo: { type: Boolean, default: false },
+    followUps: {
+        type: [{ _id: false, assunto: { type: String, default: '' }, corpo: { type: String, default: '' } }],
+        default: [],
+    },
+
     ativo: { type: Boolean, default: true },
 }, { timestamps: true })
 

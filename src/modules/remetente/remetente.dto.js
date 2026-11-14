@@ -1,5 +1,13 @@
 import AppError from '../../errors/AppError.js'
 
+// Até 3 textos de follow-up (2º, 3º e 4º e-mail).
+function followUpsDTO(lista) {
+    return (Array.isArray(lista) ? lista : []).slice(0, 3).map((item) => ({
+        assunto: String(item?.assunto ?? '').trim(),
+        corpo: String(item?.corpo ?? ''),
+    }))
+}
+
 export function criarRemetenteDTO(body) {
     const nomeNegocio = String(body?.nomeNegocio ?? '').trim()
     const email = String(body?.email ?? '').trim()
@@ -17,6 +25,8 @@ export function criarRemetenteDTO(body) {
         assuntoPadrao: String(body?.assuntoPadrao ?? ''),
         corpoPadrao: String(body?.corpoPadrao ?? ''),
         rodape: String(body?.rodape ?? ''),
+        followUpAtivo: !!body?.followUpAtivo,
+        followUps: followUpsDTO(body?.followUps),
     }
 }
 
@@ -28,6 +38,8 @@ export function editarRemetenteDTO(body) {
     if (body?.assuntoPadrao !== undefined) dados.assuntoPadrao = String(body.assuntoPadrao)
     if (body?.corpoPadrao !== undefined) dados.corpoPadrao = String(body.corpoPadrao)
     if (body?.rodape !== undefined) dados.rodape = String(body.rodape)
+    if (body?.followUpAtivo !== undefined) dados.followUpAtivo = !!body.followUpAtivo
+    if (body?.followUps !== undefined) dados.followUps = followUpsDTO(body.followUps)
     if (body?.ativo !== undefined) dados.ativo = !!body.ativo
     return dados
 }
