@@ -64,7 +64,6 @@ export const fonteCnpj = {
 
     async buscar(filtros) {
         const cnaes = [...new Set((Array.isArray(filtros.cnaes) ? filtros.cnaes : []).map(String).filter((cnae) => CNAE_VALIDO.test(cnae)))].slice(0, MAXIMO_DE_CNAES)
-        if (!cnaes.length) throw new AppError('Escolha pelo menos uma atividade', 400)
         const uf = String(filtros.uf ?? '').toUpperCase()
         if (uf && !UFS_BRASIL.includes(uf)) throw new AppError('Escolha um estado válido', 400)
         const dias = PERIODOS.includes(Number(filtros.dias)) ? Number(filtros.dias) : 90
@@ -73,15 +72,15 @@ export const fonteCnpj = {
         if (!(await ultimaImportacao())) throw new AppError('A base de CNPJs ainda está sendo baixada da Receita. Tente de novo mais tarde.', 503)
 
         const desde = new Date(Date.now() - dias * 86400000).toISOString().slice(0, 10)
-        const consulta = { cnae: { $in: cnaes }, abertura: { $gte: desde } }
+        // Nenhuma atividade marcada = todas as que estão na base.
+        const consulta = { abertura: { $gte: desde } }
+        if (cnaes.length) consulta.cnae = { $in: cnaes }
         if (uf) consulta.uf = uf
         if (cidade) consulta.municipio = new RegExp(`^${escaparRegex(cidade.normalize('NFD').replace(/[̀-ͯ]/g, ''))}$`, 'i')
         if (filtros.comTelefone !== false) consulta.$or = [{ telefone: { $ne: '' } }, { telefone2: { $ne: '' } }]
 
-        const [registros, lista] = await Promise.all([
-            CnpjModel.find(consulta).sort({ abertura: -1 }).limit(quantidade).lean(),
-            CnaeModel.find({ _id: { $in: cnaes } }).lean(),
-        ])
+        const registros = await CnpjModel.find(consulta).sort({ abertura: -1 }).limit(quantidade).lean()
+        const lista = await CnaeModel.find({ _id: { $in: [...new Set(registros.map((registro) => registro.cnae))] } }).lean()
         const atividades = Object.fromEntries(lista.map((cnae) => [cnae._id, cnae.descricao]))
         return {
             leads: registros.map((registro) => paraLead(registro, atividades)),

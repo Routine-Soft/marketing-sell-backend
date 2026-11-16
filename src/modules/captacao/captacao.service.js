@@ -5,6 +5,7 @@ import { FONTES, OPCOES_DAS_FONTES } from './fontes/index.js'
 import { cotaGoogle } from './captacao.cota.js'
 import { ultimaImportacao } from './cnpj/cnpj.importar.js'
 import CnaeModel, { semAcento } from './cnpj/cnae.model.js'
+import CnpjModel from './cnpj/cnpj.model.js'
 import NegocioModel from '../negocio/negocio.model.js'
 import { buscaDTO } from './captacao.dto.js'
 import AppError from '../../errors/AppError.js'
@@ -72,13 +73,18 @@ export const CaptacaoService = {
         return lista.sort((a, b) => posicao(a) - posicao(b)).slice(0, 30).map((cnae) => ({ codigo: cnae._id, descricao: cnae.descricao }))
     },
 
-    // Atividades escolhidas pelo negócio, com o nome e se já estão na base importada.
+    // Atividades da busca de CNPJs: as que já estão na base (com quantas empresas cada uma tem, das que têm mais para as
+    // que têm menos) e, depois, as que o negócio acrescentou e ainda não estão na base (total 0).
     async atividadesDoNegocio(tenantId) {
-        const [negocio, base] = await Promise.all([NegocioModel.findById(tenantId, 'cnaesCnpj').lean(), ultimaImportacao()])
-        const codigos = negocio?.cnaesCnpj ?? []
+        const [negocio, naBase] = await Promise.all([
+            NegocioModel.findById(tenantId, 'cnaesCnpj').lean(),
+            CnpjModel.aggregate([{ $group: { _id: '$cnae', total: { $sum: 1 } } }, { $sort: { total: -1, _id: 1 } }]),
+        ])
+        const totais = Object.fromEntries(naBase.map((item) => [item._id, item.total]))
+        const codigos = [...naBase.map((item) => item._id), ...(negocio?.cnaesCnpj ?? []).filter((codigo) => !totais[codigo])]
         const lista = await CnaeModel.find({ _id: { $in: codigos } }).lean()
         const nomes = Object.fromEntries(lista.map((cnae) => [cnae._id, cnae.descricao]))
-        return codigos.map((codigo) => ({ codigo, descricao: nomes[codigo] ?? '', naBase: !!base?.cnaes?.includes(codigo) }))
+        return codigos.map((codigo) => ({ codigo, descricao: nomes[codigo] ?? '', total: totais[codigo] ?? 0 }))
     },
 
     async opcoes(contaId, tenantId) {

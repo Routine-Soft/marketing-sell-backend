@@ -118,6 +118,5 @@ export const MENSAGENS_ES = {
     'Ideia atualizada': 'Idea actualizada',
     'Ideia excluída': 'Idea eliminada',
     'A base de CNPJs ainda está sendo baixada da Receita. Tente de novo mais tarde.': 'La base de CNPJ todavía se está descargando de la Receita Federal. Inténtalo de nuevo más tarde.',
-    'Escolha pelo menos uma atividade': 'Elige al menos una actividad',
     'Atividades inválidas': 'Actividades inválidas',
 }
