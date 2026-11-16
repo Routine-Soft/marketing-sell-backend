@@ -8,7 +8,7 @@ import { baixarZip, competenciasPublicadas, linhasDoZip } from './cnpj.zip.js'
 // Importa a base aberta de CNPJs da Receita (publicada todo mês, ~7 GB em zips): lê em fluxo, sem gravar em disco,
 // e guarda só os estabelecimentos ATIVOS, abertos nos últimos MESES_DE_ABERTURA meses e nas atividades (CNAE) que
 // interessam: as da saúde (CNAES_PADRAO) e as que algum negócio escolheu na Captação (negocio.cnaesCnpj).
-const MESES_DE_ABERTURA = 12
+const MESES_DE_ABERTURA = 3
 const PARTES = Array.from({ length: 10 }, (_, i) => i)
 const TAMANHO_DO_LOTE = 1000
 const TENTATIVAS = 3
@@ -28,9 +28,11 @@ function juntar(...partes) {
     return partes.map((parte) => String(parte ?? '').trim()).filter(Boolean).join(' ')
 }
 
+// Do dia 1º do mês, contando o mês atual: com 3 meses, em novembro o corte é 1º de setembro.
 function corteDeAbertura() {
     const data = new Date()
-    data.setUTCMonth(data.getUTCMonth() - MESES_DE_ABERTURA)
+    data.setUTCDate(1)
+    data.setUTCMonth(data.getUTCMonth() - (MESES_DE_ABERTURA - 1))
     return data.toISOString().slice(0, 10).replace(/-/g, '')
 }
 

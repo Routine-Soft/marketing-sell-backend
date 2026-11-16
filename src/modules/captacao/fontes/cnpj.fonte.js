@@ -8,7 +8,7 @@ import { quantidadeValida } from './formatar.js'
 // CNPJs abertos há pouco tempo no Brasil, nas atividades (CNAE) escolhidas (base aberta da Receita, importada todo
 // mês: ver cnpj/). Traz telefone e, às vezes, e-mail (muitas vezes o do contador).
 const MAXIMO = 500
-const PERIODOS = [30, 60, 90, 180, 365]
+const PERIODOS = [30, 60, 90]
 export const UFS_BRASIL = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
 
 function escaparRegex(texto) {

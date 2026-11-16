@@ -28,21 +28,30 @@ async function salvarLeads(tenantId, fonte, buscaId, leads) {
     }
     if (!unicos.length) return 0
 
-    const resultado = await LeadModel.bulkWrite(unicos.map((lead) => ({
-        updateOne: {
-            filter: { tenantId, fonte, idExterno: lead.idExterno },
-            update: {
-                $setOnInsert: {
-                    ...lead,
-                    tenantId,
-                    fonte,
-                    buscaId,
-                    emailStatus: lead.email ? 'encontrado' : 'nao_buscado',
+    // A fonte já manda do mais recente ao mais antigo: cada lead ganha 1 ms a menos que o anterior, para a lista
+    // (ordenada por createdAt) mostrar na mesma ordem.
+    const agora = Date.now()
+    const resultado = await LeadModel.bulkWrite(unicos.map((lead, indice) => {
+        const criadoEm = new Date(agora - indice)
+        return {
+            updateOne: {
+                filter: { tenantId, fonte, idExterno: lead.idExterno },
+                update: {
+                    $setOnInsert: {
+                        ...lead,
+                        tenantId,
+                        fonte,
+                        buscaId,
+                        emailStatus: lead.email ? 'encontrado' : 'nao_buscado',
+                        createdAt: criadoEm,
+                        updatedAt: criadoEm,
+                    },
                 },
+                upsert: true,
+                timestamps: false,
             },
-            upsert: true,
-        },
-    })), { ordered: false })
+        }
+    }), { ordered: false })
     return resultado.upsertedCount
 }
 
