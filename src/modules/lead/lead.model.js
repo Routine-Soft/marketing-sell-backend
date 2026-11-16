@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
-// novo -> contatado -> respondeu -> interessado -> demo -> teste_gratis -> cliente; descartado = perdido.
-export const LEAD_STATUS = ['novo', 'contatado', 'respondeu', 'interessado', 'demo', 'teste_gratis', 'cliente', 'descartado']
+// novo -> contatado -> respondeu -> follow_up (em acompanhamento) -> interessado -> demo -> teste_gratis -> cliente; descartado = perdido.
+export const LEAD_STATUS = ['novo', 'contatado', 'respondeu', 'follow_up', 'interessado', 'demo', 'teste_gratis', 'cliente', 'descartado']
 // Situações em que o lead ainda não respondeu: só nelas existe follow-up.
 export const SEM_RESPOSTA = ['novo', 'contatado']
 

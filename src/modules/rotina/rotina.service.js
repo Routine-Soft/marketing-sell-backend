@@ -204,7 +204,7 @@ export const RotinaService = {
             funil: {
                 leads: soma(...Object.keys(situacao)),
                 contatados,
-                responderam: soma('respondeu', 'interessado', 'demo', 'teste_gratis', 'cliente'),
+                responderam: soma('respondeu', 'follow_up', 'interessado', 'demo', 'teste_gratis', 'cliente'),
                 demos: soma('demo', 'teste_gratis', 'cliente'),
                 testeGratis: soma('teste_gratis'),
                 clientes: soma('cliente'),
