@@ -1,11 +1,16 @@
 // Avisos pelo Telegram (bot criado no @BotFather), pela API HTTP: sem SDK. Mesmo bot do Sonelia.
 // TELEGRAM_BOT_TOKEN: token do bot. O destino é a conversa da conta (ver chatDoTelegram).
 // Sem token ou sem conversa, o aviso é ignorado; se o Telegram falhar, o erro fica só no log (nunca trava quem chamou).
+// Desligado desde 2026-11-19 (pedido do Stanley): só volta a mandar com TELEGRAM_AVISOS=ligado no .env.
 const LIMITE_TELEGRAM = 4000
+
+export function telegramLigado() {
+    return process.env.TELEGRAM_AVISOS === 'ligado' && !!process.env.TELEGRAM_BOT_TOKEN
+}
 
 export function avisarNoTelegram(chatId, texto) {
     const { TELEGRAM_BOT_TOKEN } = process.env
-    if (!TELEGRAM_BOT_TOKEN || !chatId) return
+    if (!telegramLigado() || !chatId) return
 
     fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: 'POST',

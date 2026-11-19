@@ -4,7 +4,7 @@ import AvisoModel from './aviso.model.js'
 import { filtroFollowUp, leadsComFollowUpVencido } from '../lead/lead.contato.js'
 import { RotinaService } from '../rotina/rotina.service.js'
 import { garantirNegocios } from '../negocio/negocio.contas.js'
-import { avisarNoTelegram, chatDoTelegram } from '../shared/utils/telegram.js'
+import { avisarNoTelegram, chatDoTelegram, telegramLigado } from '../shared/utils/telegram.js'
 import { diaDe, diaUtil, fimDoDia, horaAgora } from '../shared/utils/dia.js'
 
 const HORA_DO_LEMBRETE = 8
@@ -33,7 +33,7 @@ function textoDoLembrete(nomeDoNegocio, vencidos, paraEncerrar) {
 // Uma vez por dia útil, a partir das 8h (Brasília): manda no Telegram de cada conta quem está com follow-up vencido.
 export async function mandarLembretes() {
     const dia = diaDe()
-    if (!diaUtil(dia) || horaAgora() < HORA_DO_LEMBRETE || !process.env.TELEGRAM_BOT_TOKEN) return
+    if (!diaUtil(dia) || horaAgora() < HORA_DO_LEMBRETE || !telegramLigado()) return
 
     const donos = await UserModel.find({ role: { $in: ['admin', 'super_admin'] }, $expr: { $eq: ['$_id', '$tenantId'] } })
     for (const dono of donos) {

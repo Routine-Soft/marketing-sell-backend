@@ -7,6 +7,7 @@ import { MODELOS_DO_SISTEMA } from './modelos.padrao.js'
 import { garantirNegocios, negocioDaSessao, semearListas } from './negocio.contas.js'
 import { negocioDTO, modeloDTO, rotinaDTO } from './negocio.dto.js'
 import { DADOS_DO_NEGOCIO } from './negocio.dados.js'
+import { apagarConexoesWhatsapp } from '../whatsapp/whatsapp.service.js'
 import AppError from '../../errors/AppError.js'
 
 function resumoDoModelo(modelo, proprio) {
@@ -75,6 +76,7 @@ export const NegocioService = {
         if (String(negocio._id) === String(ativoId)) throw new AppError('Saia deste negócio antes de excluir', 400)
         const total = await NegocioModel.countDocuments({ contaId })
         if (total <= 1) throw new AppError('A conta precisa ter pelo menos um negócio', 400)
+        await apagarConexoesWhatsapp([negocio._id])
         await Promise.all(DADOS_DO_NEGOCIO.map((Model) => Model.deleteMany({ tenantId: negocio._id })))
         await negocio.deleteOne()
         await UserModel.updateMany({ negocioAtivo: negocio._id }, { $set: { negocioAtivo: null } })

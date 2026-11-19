@@ -14,6 +14,8 @@ import { comunidadeRoutes } from "./src/modules/comunidade/comunidade.routes.js"
 import { checklistRoutes } from "./src/modules/checklist/checklist.routes.js";
 import { negocioRoutes } from "./src/modules/negocio/negocio.routes.js";
 import { ideiaRoutes } from "./src/modules/ideia/ideia.routes.js";
+import { whatsappRoutes } from "./src/modules/whatsapp/whatsapp.routes.js";
+import { iniciarFilaDeWhatsapp } from "./src/modules/whatsapp/whatsapp.fila.js";
 import { iniciarFollowUp } from "./src/modules/follow-up/follow-up.rotinas.js";
 import { iniciarImportacaoDeCnpjs } from "./src/modules/captacao/cnpj/cnpj.rotina.js";
 import { iniciarFilaDeEnvios } from "./src/modules/envio/envio.fila.js";
@@ -71,6 +73,7 @@ await fastify.register(comunidadeRoutes, { prefix: '/api' })
 await fastify.register(checklistRoutes, { prefix: '/api' })
 await fastify.register(negocioRoutes, { prefix: '/api' })
 await fastify.register(ideiaRoutes, { prefix: '/api' })
+await fastify.register(whatsappRoutes, { prefix: '/api' })
 
 const start = async () => {
   try {
@@ -83,6 +86,7 @@ const start = async () => {
       iniciarFilaDeEmails(fastify.log)
       iniciarFilaDeEnvios(fastify.log)
       iniciarFollowUp(fastify.log)
+      iniciarFilaDeWhatsapp(fastify.log)
       iniciarImportacaoDeCnpjs(fastify.log)
     }
   } catch (err) {

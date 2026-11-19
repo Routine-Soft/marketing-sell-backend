@@ -6,6 +6,7 @@ import ModeloModel from '../negocio/modelo.model.js'
 import { DADOS_DO_NEGOCIO } from '../negocio/negocio.dados.js'
 import { contaDeCadaNegocio } from '../negocio/negocio.contas.js'
 import { cotaPadrao, usoGoogleNoMes } from '../captacao/captacao.cota.js'
+import { apagarConexoesWhatsapp } from '../whatsapp/whatsapp.service.js'
 import AppError from '../../errors/AppError.js'
 
 // Painel do super_admin: as contas (cada uma é o usuário dono, role 'admin') com uso do mês.
@@ -55,6 +56,7 @@ export const ContaAdminService = {
         if (!dono) throw new AppError('Conta não encontrada', 404)
         const contaId = dono.tenantId
         const negocios = Object.keys(await contaDeCadaNegocio([contaId])).map((negocioId) => new mongoose.Types.ObjectId(negocioId))
+        await apagarConexoesWhatsapp(negocios)
         await Promise.all(DADOS_DO_NEGOCIO.map((Model) => Model.deleteMany({ tenantId: { $in: negocios } })))
         await Promise.all([NegocioModel.deleteMany({ contaId }), ModeloModel.deleteMany({ contaId })])
         await UserModel.deleteMany({ tenantId: contaId })

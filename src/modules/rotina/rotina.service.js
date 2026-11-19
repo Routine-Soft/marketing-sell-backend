@@ -12,6 +12,13 @@ const FUSO = '-03:00'
 const DIAS_DA_CONSTANCIA = 30
 const MAXIMO_DE_DIAS = 45
 const SEM_CONTAGEM = { leads: 0, primeirosContatos: 0, followUps: 0, parceiros: 0 }
+// Captação com sobra (pedido de 2026-11-19): o que passou da meta num dia vale para os dias seguintes.
+// Ex.: meta 30, captou 93 na segunda → segunda leva 30, sobram 63 → terça e quarta já ficam feitas (sobram 3).
+// Dia com menos que a meta não vira dívida: só gasta a sobra que havia.
+// Primeiros contatos além da meta gastam a sobra de leads (captou 40 e mandou 40: não sobra nada), para a sobra
+// bater com os leads que ainda esperam a primeira mensagem. A meta de contatos não tem sobra: vale todo dia.
+const CONTAGENS_COM_SOBRA = ['leads', 'parceiros']
+const GASTA_A_SOBRA = { leads: 'primeirosContatos' }
 
 function segundaDe(dia) {
     return somarDias(dia, -((diaDaSemana(dia) + 6) % 7))
@@ -66,12 +73,36 @@ function followUpsVencidos(tenantId) {
     return LeadModel.countDocuments({ tenantId, ...filtroFollowUp('vencido', fimDoDia(diaDe())) })
 }
 
-// Um dia da grade: o que está feito (marcado pela pessoa ou pelo sistema), as contagens e o % das tarefas.
-// followUpsPendentes só existe para hoje: nos outros dias, o follow-up vale o que ficou gravado.
-function montarDia(linhas, dia, contagens = SEM_CONTAGEM, marcadas = [], followUpsPendentes = null) {
+// Sobra que chega em cada dia (vinda dos anteriores), por contagem com sobra. Conta a partir de `inicio`
+// (primeiro dia de uso da rotina); dia em que a tarefa não vale (fim de semana...) só acumula o que foi captado.
+function sobrasPorDia(linhas, contagens, inicio, ultimoDia) {
+    const tarefaDe = (contagem) => linhas.find((linha) => linha.auto === contagem && linha.meta)
+    const regras = CONTAGENS_COM_SOBRA
+        .map((contagem) => ({ contagem, linha: tarefaDe(contagem), gasta: GASTA_A_SOBRA[contagem], linhaQueGasta: tarefaDe(GASTA_A_SOBRA[contagem]) }))
+        .filter((regra) => regra.linha)
+    const sobra = Object.fromEntries(regras.map((regra) => [regra.contagem, 0]))
+    const porDia = {}
+    for (let dia = inicio; dia <= ultimoDia; dia = somarDias(dia, 1)) {
+        porDia[dia] = { ...sobra }
+        for (const { contagem, linha, gasta, linhaQueGasta } of regras) {
+            const disponivel = sobra[contagem] + (contagens[dia]?.[contagem] ?? 0)
+            const usado = valeNoDia(linha, dia) ? linha.meta : 0
+            // Contatos além da meta do dia (no dia em que a tarefa de contato não vale, todos contam como extra).
+            const extras = linhaQueGasta
+                ? Math.max(0, (contagens[dia]?.[gasta] ?? 0) - (valeNoDia(linhaQueGasta, dia) ? linhaQueGasta.meta : 0))
+                : 0
+            sobra[contagem] = Math.max(0, disponivel - usado - extras)
+        }
+    }
+    return porDia
+}
+
+// Um dia da grade: o que está feito (marcado pela pessoa ou pelo sistema), as contagens, a sobra dos dias
+// anteriores e o % das tarefas. followUpsPendentes só existe para hoje: nos outros dias, vale o que ficou gravado.
+function montarDia(linhas, dia, contagens = SEM_CONTAGEM, marcadas = [], followUpsPendentes = null, sobras = {}) {
     const feita = (linha) => {
         if (linha.auto === 'followUp') return followUpsPendentes === null ? marcadas.includes(linha.id) : followUpsPendentes === 0
-        if (linha.auto) return contagens[linha.auto] >= linha.meta
+        if (linha.auto) return contagens[linha.auto] + (sobras[linha.auto] ?? 0) >= linha.meta
         return marcadas.includes(linha.id)
     }
     const doDia = linhas.filter((linha) => linha.tipo !== 'automatico' && valeNoDia(linha, dia))
@@ -83,6 +114,7 @@ function montarDia(linhas, dia, contagens = SEM_CONTAGEM, marcadas = [], followU
         util: diaUtil(dia),
         feitas,
         contagens,
+        sobras,
         followUpsPendentes,
         percentual: tarefas.length ? Math.round((concluidas / tarefas.length) * 100) : 0,
     }
@@ -90,15 +122,19 @@ function montarDia(linhas, dia, contagens = SEM_CONTAGEM, marcadas = [], followU
 
 async function diasMontados(tenantId, linhas, primeiroDia, ultimoDia) {
     const hoje = diaDe()
+    const primeiroRegistro = await RotinaDiaModel.findOne({ tenantId }).sort({ dia: 1 }).lean()
+    // A sobra vem desde o primeiro dia de uso: as contagens começam lá quando ele é anterior ao período.
+    const inicio = primeiroRegistro?.dia && primeiroRegistro.dia < primeiroDia ? primeiroRegistro.dia : primeiroDia
     const [contagens, registros, pendentes] = await Promise.all([
-        contagensPorDia(tenantId, primeiroDia, ultimoDia),
+        contagensPorDia(tenantId, inicio, ultimoDia),
         RotinaDiaModel.find({ tenantId, dia: { $gte: primeiroDia, $lte: ultimoDia } }).lean(),
         hoje >= primeiroDia && hoje <= ultimoDia ? followUpsVencidos(tenantId) : null,
     ])
+    const sobras = sobrasPorDia(linhas, contagens, inicio, ultimoDia)
     const feitasPorDia = Object.fromEntries(registros.map((registro) => [registro.dia, registro.feitas]))
     const dias = []
     for (let dia = primeiroDia; dia <= ultimoDia; dia = somarDias(dia, 1)) {
-        dias.push(montarDia(linhas, dia, contagens[dia], feitasPorDia[dia], dia === hoje ? pendentes : null))
+        dias.push(montarDia(linhas, dia, contagens[dia], feitasPorDia[dia], dia === hoje ? pendentes : null, sobras[dia]))
     }
     return dias
 }

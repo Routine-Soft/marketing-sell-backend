@@ -42,6 +42,10 @@ const leadSchema = new mongoose.Schema({
     ultimoEnvioNegocio: { type: String, default: '' },
     envioErro: { type: String, default: '' },
 
+    // WhatsApp automático (ver módulo whatsapp): quando foi tentado (o lead não é tentado de novo) e a falha.
+    whatsappEm: { type: Date, default: null },
+    whatsappErro: { type: String, default: '' },
+
     // Contatos com o lead (ver lead.contato.js): o follow-up é 3, 7 e 14 dias depois do primeiro contato.
     primeiroContatoEm: { type: Date, default: null },
     canalPrimeiroContato: { type: String, default: '' },
@@ -58,6 +62,7 @@ leadSchema.index({ tenantId: 1, fonte: 1, idExterno: 1 }, { unique: true })
 leadSchema.index({ tenantId: 1, createdAt: -1 })
 leadSchema.index({ emailStatus: 1, emailBuscaEm: 1 })
 leadSchema.index({ tenantId: 1, proximoFollowUpEm: 1 })
+leadSchema.index({ tenantId: 1, status: 1, whatsappEm: 1 })
 
 const LeadModel = mongoose.models.leads || mongoose.model('leads', leadSchema)
 
