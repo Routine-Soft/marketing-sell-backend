@@ -117,8 +117,6 @@ export const MENSAGENS_ES = {
     'Ideia adicionada': 'Idea agregada',
     'Ideia atualizada': 'Idea actualizada',
     'Ideia excluída': 'Idea eliminada',
-    'A base de CNPJs ainda está sendo baixada da Receita. Tente de novo mais tarde.': 'La base de CNPJ todavía se está descargando de la Receita Federal. Inténtalo de nuevo más tarde.',
-    'Atividades inválidas': 'Actividades inválidas',
     // WhatsApp automático
     'O WhatsApp não está disponível neste servidor': 'WhatsApp no está disponible en este servidor',
     'Não foi possível falar com o serviço de WhatsApp. Tente de novo em instantes.': 'No fue posible comunicarse con el servicio de WhatsApp. Inténtalo de nuevo en unos instantes.',

@@ -17,7 +17,6 @@ import { ideiaRoutes } from "./src/modules/ideia/ideia.routes.js";
 import { whatsappRoutes } from "./src/modules/whatsapp/whatsapp.routes.js";
 import { iniciarFilaDeWhatsapp } from "./src/modules/whatsapp/whatsapp.fila.js";
 import { iniciarFollowUp } from "./src/modules/follow-up/follow-up.rotinas.js";
-import { iniciarImportacaoDeCnpjs } from "./src/modules/captacao/cnpj/cnpj.rotina.js";
 import { iniciarFilaDeEnvios } from "./src/modules/envio/envio.fila.js";
 import { iniciarFilaDeEmails } from "./src/modules/email-site/email-site.fila.js";
 
@@ -87,7 +86,6 @@ const start = async () => {
       iniciarFilaDeEnvios(fastify.log)
       iniciarFollowUp(fastify.log)
       iniciarFilaDeWhatsapp(fastify.log)
-      iniciarImportacaoDeCnpjs(fastify.log)
     }
   } catch (err) {
     fastify.log.error(err)

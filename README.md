@@ -1,6 +1,6 @@
 # Marketing Sell — Backend (API)
 
-REST API for **Marketing Sell**, a multi-tenant lead generation and sales routine system. It finds new leads in public data sources (US and Brazil), finds their email addresses, sends emails and automatic follow-ups through Gmail, and turns a daily marketing and sales routine (originally a spreadsheet) into an app.
+REST API for **Marketing Sell**, a multi-tenant lead generation and sales routine system. It finds new leads in public data sources, finds their email addresses, sends emails and automatic follow-ups through Gmail, and turns a daily marketing and sales routine (originally a spreadsheet) into an app.
 
 ![Node](https://img.shields.io/badge/node-26.13.1-339933?logo=node.js&logoColor=white)
 ![Fastify](https://img.shields.io/badge/fastify-5-000000?logo=fastify)
@@ -20,7 +20,6 @@ REST API for **Marketing Sell**, a multi-tenant lead generation and sales routin
   - `google`: Google Places API (Text Search), with a monthly quota per account
   - `empresas_novas`: newly registered companies from US state open data (Socrata)
   - `licencas`: Texas TDLR licenses
-  - `cnpj`: newly opened companies in Brazil, by activity (CNAE), imported monthly from the Federal Revenue open data
 - **No duplicates:** a lead is unique per business, source and external ID.
 - **Email finder:** a queue that visits each lead's website looking for an email address (blocks internal IPs).
 - **Senders:** one per business, with a Gmail address and an encrypted app password, default subject, body and CAN-SPAM footer.
@@ -43,7 +42,7 @@ REST API for **Marketing Sell**, a multi-tenant lead generation and sales routin
 | Auth | argon2, jsonwebtoken |
 | Email | nodemailer (Gmail SMTP), imapflow (replies) |
 | Alerts | Telegram Bot API |
-| Data sources | NPI Registry, Google Places API, Socrata, Texas open data, Brazil's CNPJ open data |
+| Data sources | NPI Registry, Google Places API, Socrata, Texas open data |
 
 ## Prerequisites
 

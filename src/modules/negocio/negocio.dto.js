@@ -2,7 +2,6 @@ import mongoose from 'mongoose'
 import { ABAS, AUTOS, CONTAGENS } from './modelos.padrao.js'
 import { texto } from '../shared/utils/campos.js'
 import AppError from '../../errors/AppError.js'
-import { CNAE_VALIDO, MAXIMO_DE_CNAES } from '../captacao/cnpj/cnpj.cnaes.js'
 
 const COR = /^#[0-9a-f]{6}$/i
 const MAXIMO_DE_BLOCOS = 30
@@ -22,10 +21,6 @@ export function negocioDTO(body = {}, { criando = false } = {}) {
     }
     if ('site' in body) dto.site = texto(body.site, 200)
     if ('abas' in body) dto.abas = abasDTO(body.abas)
-    if ('cnaesCnpj' in body) {
-        if (!Array.isArray(body.cnaesCnpj)) throw new AppError('Atividades inválidas', 400)
-        dto.cnaesCnpj = [...new Set(body.cnaesCnpj.map(String).filter((cnae) => CNAE_VALIDO.test(cnae)))].slice(0, MAXIMO_DE_CNAES)
-    }
     return dto
 }
 

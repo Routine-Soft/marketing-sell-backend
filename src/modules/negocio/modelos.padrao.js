@@ -29,7 +29,6 @@ const BLOCOS_DA_PLANILHA = [
 
 const LINHAS_DA_PLANILHA = [
     { id: 'leads', bloco: 'leads', titulo: 'Pegar 30 leads novos e cadastrar na aba Leads', meta: 30, auto: 'leads' },
-    { id: 'leads_cnpj', bloco: 'leads', tipo: 'opcional', titulo: 'CNPJs recém-abertos (saúde)' },
     { id: 'leads_google_maps', bloco: 'leads', tipo: 'opcional', titulo: 'Google Maps' },
     { id: 'leads_instagram', bloco: 'leads', tipo: 'opcional', titulo: 'Instagram' },
     { id: 'leads_doctoralia', bloco: 'leads', tipo: 'opcional', titulo: 'Doctoralia' },
@@ -88,7 +87,6 @@ const LISTAS_DA_PLANILHA = {
         ['Contato', 'Escrever script de e-mail', 'Assunto + 4 linhas + pergunta de sim ou não'],
         ['Contato', 'Escrever script de DM no Instagram', ''],
         ['Contato', 'Escrever mensagens de follow-up (2º, 3º e 4º contato)', ''],
-        ['Leads', 'Definir onde pegar CNPJs recém-abertos da saúde', 'Fonte e filtro (CNAE de saúde, data de abertura)'],
         ['Vídeo', 'Arrumar perfil do TikTok', 'Bio + link para o teste grátis'],
         ['Vídeo', 'Arrumar perfil do Instagram', 'Bio + link para o teste grátis'],
         ['Vídeo', 'Arrumar canal do YouTube', ''],

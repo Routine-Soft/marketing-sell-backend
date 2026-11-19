@@ -141,8 +141,6 @@ export const MENSAGENS_EN = {
     // Geral
     'Erro interno do servidor': 'Internal server error',
     'Registro não encontrado': 'Record not found',
-    'A base de CNPJs ainda está sendo baixada da Receita. Tente de novo mais tarde.': 'The CNPJ database is still being downloaded from the Brazilian Federal Revenue. Try again later.',
-    'Atividades inválidas': 'Invalid activities',
     // WhatsApp automático
     'O WhatsApp não está disponível neste servidor': 'WhatsApp is not available on this server',
     'Não foi possível falar com o serviço de WhatsApp. Tente de novo em instantes.': 'Could not reach the WhatsApp service. Try again in a moment.',

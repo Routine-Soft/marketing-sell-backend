@@ -2,7 +2,6 @@ import { fonteNpi, ESPECIALIDADES_NPI } from './npi.fonte.js'
 import { fonteGooglePlaces } from './google-places.fonte.js'
 import { fonteEmpresasNovas, ESTADOS_EMPRESAS_NOVAS } from './empresas-novas.fonte.js'
 import { fonteLicencas, ESTADOS_LICENCAS } from './licencas.fonte.js'
-import { fonteCnpj, UFS_BRASIL } from './cnpj.fonte.js'
 import { ESTADOS_EUA } from './formatar.js'
 
 // Cada fonte de dados é uma "subfeature" da captação: recebe filtros e devolve leads no mesmo formato
@@ -13,7 +12,6 @@ export const FONTES = {
     [fonteGooglePlaces.id]: fonteGooglePlaces,
     [fonteEmpresasNovas.id]: fonteEmpresasNovas,
     [fonteLicencas.id]: fonteLicencas,
-    [fonteCnpj.id]: fonteCnpj,
 }
 
 // Listas que a tela usa para montar os formulários de cada fonte.
@@ -22,5 +20,4 @@ export const OPCOES_DAS_FONTES = {
     npi: { especialidades: ESPECIALIDADES_NPI },
     empresas_novas: { estados: ESTADOS_EMPRESAS_NOVAS },
     licencas: { estados: ESTADOS_LICENCAS },
-    cnpj: { ufs: UFS_BRASIL },
 }
