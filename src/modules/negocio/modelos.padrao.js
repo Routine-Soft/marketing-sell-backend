@@ -16,34 +16,30 @@ export const AUTOS = ['leads', 'primeirosContatos', 'parceiros', 'followUp']
 const SEG_QUA_SEX = [1, 3, 5]
 const SEXTA = [5]
 
+// Ordem revista em 2026-11-20: primeiro quem está mais perto de virar cliente (respostas e follow-up, contato), depois
+// o que atrai lead (vídeo, parceiros, comunidades, blog) e por último a captação, com tempo limite, que abastece o
+// contato do dia seguinte (Jeb Blount, "Fanatical Prospecting"; Alex Hormozi, "$100M Leads"; Aaron Ross, "Predictable Revenue").
 const BLOCOS_DA_PLANILHA = [
-    { id: 'leads', nome: '1. Leads', cor: '#2a7de1' },
+    { id: 'follow_up', nome: '1. Respostas e follow-up', cor: '#e08a12' },
     { id: 'contato', nome: '2. Contato', cor: '#19a568' },
-    { id: 'follow_up', nome: '3. Follow-up', cor: '#e08a12' },
-    { id: 'video', nome: '4. Vídeo', cor: '#d9447f' },
-    { id: 'blog', nome: '5. Blog', cor: '#7646d8' },
-    { id: 'parceiros', nome: '6. Parceiros', cor: '#c2710c' },
-    { id: 'comunidades', nome: '7. Comunidades', cor: '#1fa5b3' },
+    { id: 'video', nome: '3. Vídeo', cor: '#d9447f' },
+    { id: 'parceiros', nome: '4. Parceiros', cor: '#c2710c' },
+    { id: 'comunidades', nome: '5. Comunidades', cor: '#1fa5b3' },
+    { id: 'blog', nome: '6. Blog', cor: '#7646d8' },
+    { id: 'leads', nome: '7. Captação (30 min)', cor: '#2a7de1' },
     { id: 'fechamento', nome: '8. Fechamento', cor: '#64748b' },
 ]
 
 const LINHAS_DA_PLANILHA = [
-    { id: 'leads', bloco: 'leads', titulo: 'Pegar 30 leads novos e cadastrar na aba Leads', meta: 30, auto: 'leads' },
-    { id: 'leads_google_maps', bloco: 'leads', tipo: 'opcional', titulo: 'Google Maps' },
-    { id: 'leads_instagram', bloco: 'leads', tipo: 'opcional', titulo: 'Instagram' },
-    { id: 'leads_doctoralia', bloco: 'leads', tipo: 'opcional', titulo: 'Doctoralia' },
-    { id: 'leads_conselhos', bloco: 'leads', tipo: 'opcional', titulo: 'Sites dos conselhos (CRP, CREFITO, CRN…)' },
-    { id: 'leads_no_dia', bloco: 'leads', tipo: 'automatico', titulo: 'Leads cadastrados no dia', meta: 30, contagem: 'leads' },
+    { id: 'follow_up', bloco: 'follow_up', titulo: 'Responder quem respondeu e fazer o follow-up vencido (aba Leads)' },
+    { id: 'follow_ups_no_dia', bloco: 'follow_up', tipo: 'automatico', titulo: 'Follow-ups feitos no dia', contagem: 'followUps' },
 
-    { id: 'primeiro_contato', bloco: 'contato', titulo: 'Fazer o 1º contato com os 30 leads', meta: 30, auto: 'primeirosContatos' },
+    { id: 'primeiro_contato', bloco: 'contato', titulo: 'Fazer o 1º contato com 15 leads (os captados ontem)', meta: 15, auto: 'primeirosContatos' },
     { id: 'contato_ligacao', bloco: 'contato', tipo: 'opcional', titulo: 'Ligação' },
     { id: 'contato_whatsapp', bloco: 'contato', tipo: 'opcional', titulo: 'WhatsApp' },
     { id: 'contato_email', bloco: 'contato', tipo: 'opcional', titulo: 'E-mail' },
     { id: 'contato_dm', bloco: 'contato', tipo: 'opcional', titulo: 'DM no Instagram' },
-    { id: 'contatos_no_dia', bloco: 'contato', tipo: 'automatico', titulo: 'Primeiros contatos no dia', meta: 30, contagem: 'primeirosContatos' },
-
-    { id: 'follow_up', bloco: 'follow_up', titulo: 'Follow-up de quem está com data vencida (aba Leads)', auto: 'followUp' },
-    { id: 'follow_ups_no_dia', bloco: 'follow_up', tipo: 'automatico', titulo: 'Follow-ups feitos no dia', contagem: 'followUps' },
+    { id: 'contatos_no_dia', bloco: 'contato', tipo: 'automatico', titulo: 'Primeiros contatos no dia', meta: 15, contagem: 'primeirosContatos' },
 
     { id: 'video_roteiro', bloco: 'video', titulo: 'Criar roteiro e legenda (Ideias de vídeo)', meta: 1 },
     { id: 'video_vertical', bloco: 'video', titulo: 'Gravar 1 vídeo vertical', meta: 1 },
@@ -55,10 +51,6 @@ const LINHAS_DA_PLANILHA = [
     { id: 'postar_x', bloco: 'video', titulo: 'Postar no X' },
     { id: 'postar_youtube', bloco: 'video', titulo: 'Postar o vídeo horizontal no YouTube' },
     { id: 'comentar_posts', bloco: 'video', titulo: 'Comentar em 5 posts de possíveis clientes', meta: 5 },
-
-    { id: 'blog_escrever', bloco: 'blog', titulo: 'Escrever 1 artigo', meta: 1, dias: SEG_QUA_SEX },
-    { id: 'blog_publicar', bloco: 'blog', titulo: 'Publicar (deploy)', dias: SEG_QUA_SEX },
-    { id: 'blog_indexar', bloco: 'blog', titulo: 'Pedir indexação no Google Search Console', dias: SEG_QUA_SEX },
 
     { id: 'parceiros_pegar', bloco: 'parceiros', titulo: 'Pegar 5 leads de parceiros (aba Parceiros)', meta: 5, auto: 'parceiros' },
     { id: 'parceiros_contadores', bloco: 'parceiros', tipo: 'opcional', titulo: 'Contadores' },
@@ -72,6 +64,17 @@ const LINHAS_DA_PLANILHA = [
     { id: 'comunidades_whatsapp', bloco: 'comunidades', tipo: 'opcional', titulo: 'WhatsApp' },
     { id: 'comunidades_telegram', bloco: 'comunidades', tipo: 'opcional', titulo: 'Telegram' },
     { id: 'comunidades_discord', bloco: 'comunidades', tipo: 'opcional', titulo: 'Discord' },
+
+    { id: 'blog_escrever', bloco: 'blog', titulo: 'Escrever 1 artigo', meta: 1, dias: SEG_QUA_SEX },
+    { id: 'blog_publicar', bloco: 'blog', titulo: 'Publicar (deploy)', dias: SEG_QUA_SEX },
+    { id: 'blog_indexar', bloco: 'blog', titulo: 'Pedir indexação no Google Search Console', dias: SEG_QUA_SEX },
+
+    { id: 'leads', bloco: 'leads', titulo: 'Captar leads por 30 minutos (meta: 15) e cadastrar na aba Leads', meta: 15, auto: 'leads' },
+    { id: 'leads_google_maps', bloco: 'leads', tipo: 'opcional', titulo: 'Google Maps' },
+    { id: 'leads_instagram', bloco: 'leads', tipo: 'opcional', titulo: 'Instagram' },
+    { id: 'leads_doctoralia', bloco: 'leads', tipo: 'opcional', titulo: 'Doctoralia' },
+    { id: 'leads_conselhos', bloco: 'leads', tipo: 'opcional', titulo: 'Sites dos conselhos (CRP, CREFITO, CRN…)' },
+    { id: 'leads_no_dia', bloco: 'leads', tipo: 'automatico', titulo: 'Leads cadastrados no dia', meta: 15, contagem: 'leads' },
 
     { id: 'atualizar_leads', bloco: 'fechamento', titulo: 'Atualizar status na aba Leads e olhar o Painel' },
     { id: 'revisar_semana', bloco: 'fechamento', titulo: 'Revisar os números da semana e ajustar a mensagem', dias: SEXTA },
@@ -139,7 +142,7 @@ export const MODELOS_DO_SISTEMA = [
     {
         id: 'marketing_vendas',
         nome: 'Marketing e vendas (completo)',
-        descricao: 'A rotina da planilha "Rotina de Marketing e Vendas": leads, contato, follow-up, vídeo, blog, parceiros, comunidades e fechamento.',
+        descricao: 'A rotina da planilha "Rotina de Marketing e Vendas": follow-up, contato, vídeo, parceiros, comunidades, blog, captação e fechamento.',
         abas: ABAS,
         rotina: { blocos: BLOCOS_DA_PLANILHA, linhas: LINHAS_DA_PLANILHA.map(linha) },
         listas: { preparacao: paraItens(LISTAS_DA_PLANILHA.preparacao), anuncios: paraItens(LISTAS_DA_PLANILHA.anuncios) },
@@ -147,26 +150,26 @@ export const MODELOS_DO_SISTEMA = [
     {
         id: 'prospeccao_simples',
         nome: 'Prospecção simples',
-        descricao: 'Para qualquer negócio que vende por contato direto: leads, 1º contato, follow-up, redes sociais e fechamento.',
+        descricao: 'Para qualquer negócio que vende por contato direto: follow-up, 1º contato, redes sociais, captação e fechamento.',
         abas: ['painel', 'leads', 'preparacao'],
         rotina: {
             blocos: [
-                { id: 'leads', nome: '1. Leads', cor: '#2a7de1' },
+                { id: 'follow_up', nome: '1. Respostas e follow-up', cor: '#e08a12' },
                 { id: 'contato', nome: '2. Contato', cor: '#19a568' },
-                { id: 'follow_up', nome: '3. Follow-up', cor: '#e08a12' },
-                { id: 'redes', nome: '4. Redes sociais', cor: '#d9447f' },
+                { id: 'redes', nome: '3. Redes sociais', cor: '#d9447f' },
+                { id: 'leads', nome: '4. Captação (30 min)', cor: '#2a7de1' },
                 { id: 'fechamento', nome: '5. Fechamento', cor: '#64748b' },
             ],
             linhas: [
-                { id: 'leads', bloco: 'leads', titulo: 'Pegar 20 leads novos', meta: 20, auto: 'leads' },
-                { id: 'leads_no_dia', bloco: 'leads', tipo: 'automatico', titulo: 'Leads cadastrados no dia', meta: 20, contagem: 'leads' },
-                { id: 'primeiro_contato', bloco: 'contato', titulo: 'Fazer o 1º contato com 20 leads', meta: 20, auto: 'primeirosContatos' },
+                { id: 'follow_up', bloco: 'follow_up', titulo: 'Responder quem respondeu e fazer o follow-up vencido' },
+                { id: 'primeiro_contato', bloco: 'contato', titulo: 'Fazer o 1º contato com 10 leads (os captados ontem)', meta: 10, auto: 'primeirosContatos' },
                 { id: 'contato_ligacao', bloco: 'contato', tipo: 'opcional', titulo: 'Ligação' },
                 { id: 'contato_whatsapp', bloco: 'contato', tipo: 'opcional', titulo: 'WhatsApp' },
-                { id: 'follow_up', bloco: 'follow_up', titulo: 'Follow-up de quem está com data vencida', auto: 'followUp' },
                 { id: 'video_roteiro', bloco: 'redes', titulo: 'Criar roteiro e legenda (Ideias de vídeo)', meta: 1 },
                 { id: 'postar', bloco: 'redes', titulo: 'Postar 1 conteúdo', meta: 1 },
                 { id: 'comentar_posts', bloco: 'redes', titulo: 'Comentar em 5 posts de possíveis clientes', meta: 5 },
+                { id: 'leads', bloco: 'leads', titulo: 'Captar leads por 30 minutos (meta: 10)', meta: 10, auto: 'leads' },
+                { id: 'leads_no_dia', bloco: 'leads', tipo: 'automatico', titulo: 'Leads cadastrados no dia', meta: 10, contagem: 'leads' },
                 { id: 'atualizar_leads', bloco: 'fechamento', titulo: 'Atualizar status dos leads e olhar o Painel' },
                 { id: 'revisar_semana', bloco: 'fechamento', titulo: 'Revisar os números da semana', dias: SEXTA },
             ].map(linha),
