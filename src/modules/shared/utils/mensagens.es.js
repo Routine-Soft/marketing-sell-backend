@@ -117,6 +117,18 @@ export const MENSAGENS_ES = {
     'Ideia adicionada': 'Idea agregada',
     'Ideia atualizada': 'Idea actualizada',
     'Ideia excluída': 'Idea eliminada',
+
+    // ICP e Persona
+    'ICP não encontrado': 'ICP no encontrado',
+    'ICP adicionado': 'ICP agregado',
+    'ICP atualizado': 'ICP actualizado',
+    'ICP excluído': 'ICP eliminado',
+    'Persona não encontrada': 'Persona no encontrada',
+    'Persona adicionada': 'Persona agregada',
+    'Persona atualizada': 'Persona actualizada',
+    'Persona excluída': 'Persona eliminada',
+    'Dê um nome': 'Ponle un nombre',
+    'Escolha o ICP da persona': 'Elige el ICP de la persona',
     // WhatsApp automático
     'O WhatsApp não está disponível neste servidor': 'WhatsApp no está disponible en este servidor',
     'Não foi possível falar com o serviço de WhatsApp. Tente de novo em instantes.': 'No fue posible comunicarse con el servicio de WhatsApp. Inténtalo de nuevo en unos instantes.',

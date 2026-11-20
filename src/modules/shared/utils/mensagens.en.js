@@ -138,6 +138,18 @@ export const MENSAGENS_EN = {
     'Ideia atualizada': 'Idea updated',
     'Ideia excluída': 'Idea deleted',
 
+    // ICP e Persona
+    'ICP não encontrado': 'ICP not found',
+    'ICP adicionado': 'ICP added',
+    'ICP atualizado': 'ICP updated',
+    'ICP excluído': 'ICP deleted',
+    'Persona não encontrada': 'Persona not found',
+    'Persona adicionada': 'Persona added',
+    'Persona atualizada': 'Persona updated',
+    'Persona excluída': 'Persona deleted',
+    'Dê um nome': 'Give it a name',
+    'Escolha o ICP da persona': "Choose the persona's ICP",
+
     // Geral
     'Erro interno do servidor': 'Internal server error',
     'Registro não encontrado': 'Record not found',
